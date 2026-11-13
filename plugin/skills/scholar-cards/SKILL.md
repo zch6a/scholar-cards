@@ -20,7 +20,14 @@ uvx --from git+https://github.com/zch6a/scholar-cards scholar-cards A5023888391 
 - The second command writes `stats.svg`, `works.svg`, `citations.svg` and `scholar.json` (numbers, date, the API
   URLs). Options: `--cards`, `--theme auto|light|dark` (or `light,dark`), `--lang en|zh`, `--top N`,
   `--snapshot scholar.json` to render again offline.
+- After fetching it prints whom it got (name, ID, counts, the record's ORCID): read it back to the user. A
+  "warning: … the record's own ORCID is …" means OpenAlex gave someone else's record for that ORCID: stop and search
+  again rather than publishing the cards.
+- Themes: `auto` follows the reader's system setting; for GitHub's own light/dark choice write `--theme light,dark`
+  and use the README's `<picture>` snippet; for al-folio (its dark switch does not change the system setting) pick
+  the site's theme.
 - For a homepage that stays current, give the user the two-job workflow from the README (a read-only job runs the
-  action, a second job only commits); point `out` at a folder the site serves.
+  action, a second job only commits); point `out` at a folder the site serves, and change the commit job's `cards/`
+  paths to match.
 - The numbers are OpenAlex's, not Google Scholar's: say so if the user compares them; wrong attributions are fixed
   at OpenAlex, not here. An API key (`OPENALEX_API_KEY`) is optional; never put one in a file or a URL.
