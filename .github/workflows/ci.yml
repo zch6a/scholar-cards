@@ -41,3 +41,39 @@ jobs:
           test "$(ls out/*.svg | wc -l)" -eq 6
           grep -q '<svg' out/stats-light.svg
           grep -q 'Dr. Ada Example' out/works-dark.svg
+  # The README's two-job recipe, step for step, from the example's snapshot: a read-only job renders and uploads the
+  # cards; a second job clears the old ones, downloads, adds and commits them. It does not push (CI never writes).
+  recipe-cards:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./
+        with:
+          snapshot: examples/scholar.json
+          out: cards
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with: { name: cards, path: cards/ }
+  recipe-commit:
+    needs: recipe-cards
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: A stale card from an earlier run, to be cleared
+        run: |
+          mkdir -p cards && echo '<svg/>' > cards/old-theme.svg
+          git -c user.name=ci -c user.email=ci@example.invalid add cards
+          git -c user.name=ci -c user.email=ci@example.invalid commit -q -m "an earlier run"
+      - run: rm -rf cards
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with: { name: cards, path: cards/ }
+      - run: |
+          git add -A cards
+          git diff --cached --quiet && { echo "nothing to commit, but the cards changed" >&2; exit 1; }
+          git -c user.name=scholar-cards -c user.email=actions@users.noreply.github.com commit -q -m "Update scholar cards"
+          git show --stat --format= HEAD
+          git show --name-status --format= HEAD | grep -qP '^D\tcards/old-theme.svg'
+          for f in stats works citations; do git show --name-status --format= HEAD | grep -qP "^A\tcards/$f.svg"; done
