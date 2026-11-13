@@ -56,6 +56,14 @@ def test_a_deeply_nested_snapshot_is_exit_2(tmp_path: Path) -> None:
     assert main(["--snapshot", str(snap), "-o", str(tmp_path)]) == 2
 
 
+def test_an_empty_theme_list_is_an_error(tmp_path: Path) -> None:
+    snap = tmp_path / "s.json"
+    snap.write_text(scholar().to_json(), encoding="utf-8")
+    with pytest.raises(SystemExit) as e:  # the Action passes theme: "" as an empty argument; nothing written is not success
+        main(["--snapshot", str(snap), "-o", str(tmp_path), "--theme", " , "])
+    assert e.value.code == 2
+
+
 def test_null_optional_text_loads() -> None:
     data = json.loads(scholar().to_json()) | {"orcid": None, "institution": None, "retrieved": None}
     data["top_works"][0]["venue"] = None

@@ -74,6 +74,8 @@ def main(argv: list[str] | None = None) -> int:
     themes = [t.strip() for t in args.theme.split(",") if t.strip()]
     if not cards:
         ap.error(f"--cards names no card; the cards are {', '.join(CARDS)}")
+    if not themes:
+        ap.error(f"--theme names no theme; the themes are auto, {', '.join(THEMES)}")
     if not 1 <= args.top <= 50:
         ap.error("--top is from 1 to 50")
     if args.name and args.who != "search":

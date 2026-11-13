@@ -190,3 +190,22 @@ Also: each card's id is computed from everything it shows and says (language and
 Tests: 77 (were 65), Python 3.10 and 3.13; ruff, mypy clean.
 
 Next: round 4.
+
+### 2026-11-13 — polishing round 4
+
+Round 3's CI was green on every job (the recipe jobs too).
+
+- **As a new user would**: `uvx --from git+https://github.com/zch6a/scholar-cards` with an empty uv cache installs
+  and runs; a live `search` lists records with their ORCIDs, and a live fetch prints whom it got and writes the six
+  cards (`light,dark`) and the snapshot. A folder name with spaces and Chinese characters, and `--theme "light, dark"`,
+  work in PowerShell.
+- Found: an empty theme list (`theme: ""` in the Action, or `--theme " , "`) wrote no cards and succeeded: an error
+  now, like an empty `--cards`.
+- **Security and release**: no subprocess, eval, pickle or YAML loader in the package; every workflow read-only but
+  the release's publish job (gh only); every action pinned by commit; the version is 0.1.0 in pyproject, the package
+  and the plugin; the wheel holds only the package, the sdist no images.
+- `--help` read again: up to date since round 2.
+
+Tests: 78. Python 3.10 and 3.13; ruff, mypy clean.
+
+Next: round 5, then v0.1.0.
