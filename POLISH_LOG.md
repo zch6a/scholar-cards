@@ -153,3 +153,7 @@ dark switch does not change the reader's system setting, it suggests a fixed the
 Tests: 65 (were 48), Python 3.10 and 3.13; ruff, mypy clean.
 
 Next: round 3.
+
+A slip in round 2: its commit went out with clip's doctest failing on Python 3.10 (an exact cut right on the width
+boundary rounds differently there; CI caught it). The doctest now checks what a cut must be, CI is green again, and
+the commit gate runs the 3.10 tests too.
