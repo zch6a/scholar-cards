@@ -4,6 +4,7 @@ and is sent as a header, never in a URL. The User-Agent names the tool, not the 
 
 from __future__ import annotations
 
+import http.client
 import json
 import os
 import re
@@ -18,8 +19,8 @@ from . import __version__
 
 API = "https://api.openalex.org"
 USER_AGENT = f"scholar-cards/{__version__} (+https://github.com/zch6a/scholar-cards)"
-ORCID = re.compile(r"(\d{4}-\d{4}-\d{4}-\d{3}[\dX])$", re.I)
-OPENALEX_ID = re.compile(r"(?:https?://(?:api\.)?openalex\.org/(?:authors/)?)?(A\d+)$", re.I)
+ORCID = re.compile(r"^(?:https?://(?:www\.)?orcid\.org/|orcid:)?(\d{4}-\d{4}-\d{4}-\d{3}[\dX])$", re.I)
+OPENALEX_ID = re.compile(r"^(?:https?://(?:api\.)?openalex\.org/(?:authors/)?)?(A\d+)$", re.I)
 
 Getter = Callable[[str, dict[str, str]], tuple[int, dict[str, str], bytes]]  # url, headers -> status, headers, body
 
@@ -43,12 +44,15 @@ def author_path(who: str) -> str:
 
 
 def _urlopen(url: str, headers: dict[str, str]) -> tuple[int, dict[str, str], bytes]:
+    """GET: (status, headers with lower-case names, body); a network failure is status 0 (retried like a 5xx)."""
     request = urllib.request.Request(url, headers=headers)
     try:
         with urllib.request.urlopen(request, timeout=30) as r:  # noqa: S310 - the URL is the API's, built here
-            return r.status, dict(r.headers), r.read()
+            return r.status, {k.lower(): v for k, v in r.headers.items()}, r.read()
     except urllib.error.HTTPError as e:
-        return e.code, dict(e.headers or {}), e.read() or b""
+        return e.code, {k.lower(): v for k, v in (e.headers or {}).items()}, e.read() or b""
+    except (OSError, http.client.HTTPException) as e:  # DNS, timeout, a connection cut mid-answer
+        return 0, {}, str(e).encode()
 
 
 class Client:
@@ -67,19 +71,26 @@ class Client:
             headers["Authorization"] = f"Bearer {self.key}"
         for attempt in range(4):
             status, response_headers, body = self._get(url, headers)
-            if status == 429 or status >= 500:
+            if status in (0, 429) or status >= 500:
                 if attempt == 3:
                     break
-                wait = response_headers.get("Retry-After", "")
+                wait = {k.lower(): v for k, v in response_headers.items()}.get("retry-after", "")
                 self._sleep(min(60.0, float(wait)) if wait.replace(".", "", 1).isdigit() else 2.0**attempt)
                 continue
             if status == 404:
                 raise OpenAlexError(f"OpenAlex has no record at {url}")
             if status != 200:
                 raise OpenAlexError(f"OpenAlex answered {status} for {url}: {body[:200].decode('utf-8', 'replace')}")
+            try:
+                data = json.loads(body)
+            except ValueError as e:
+                raise OpenAlexError(f"OpenAlex's answer for {url} is not JSON ({e})") from e
+            if not isinstance(data, dict):
+                raise OpenAlexError(f"OpenAlex's answer for {url} is not a record")
             self.requested.append(url)
-            return json.loads(body)
-        raise OpenAlexError(f"OpenAlex kept answering {status} for {url} (rate limit or outage); try later, or set OPENALEX_API_KEY")
+            return data
+        what = "could not be reached" if status == 0 else f"kept answering {status}"
+        raise OpenAlexError(f"OpenAlex {what} for {url} (rate limit, outage or network); try later, or set OPENALEX_API_KEY")
 
     def author(self, who: str) -> dict[str, Any]:
         return self.get(author_path(who))  # type: ignore[no-any-return]

@@ -4,7 +4,7 @@
 
 **Your citations, h-index and most cited papers as cards for your homepage or GitHub profile, kept fresh by a
 GitHub Action.** The numbers come from [OpenAlex](https://openalex.org) (open, no account needed), each traceable to
-the API record it came from; the cards are self-contained SVG that follow the reader's light or dark theme.
+the API record it came from; the cards are self-contained SVG, light, dark, or following the reader's system setting.
 
 <a href="https://github.com/zch6a/scholar-cards/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/zch6a/scholar-cards/actions/workflows/ci.yml/badge.svg"></a>
 <img alt="Python 3.10+" src="https://img.shields.io/badge/python-3.10%2B-blue">
@@ -35,7 +35,7 @@ scheduled workflow keeps them current.
 uvx --from git+https://github.com/zch6a/scholar-cards scholar-cards search "Your Name"
 ```
 
-lists the author records OpenAlex has for that name (IDs, institutions, counts). OpenAlex sometimes splits one person
+lists the author records OpenAlex has for that name (IDs, ORCIDs, institutions, counts). OpenAlex sometimes splits one person
 into several records; pick the one with your ORCID, or the largest; the tool never picks for you. Then:
 
 ```bash
@@ -47,6 +47,16 @@ the API URLs they came from). Put them in a page:
 
 ```markdown
 ![My citations](cards/stats.svg)
+```
+
+`--theme auto` follows the reader's system colour scheme. To follow the theme a reader picked on GitHub, write both
+(`--theme light,dark`) and let GitHub choose:
+
+```html
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="cards/stats-dark.svg">
+  <img alt="My citations" src="cards/stats-light.svg">
+</picture>
 ```
 
 | option | |
@@ -96,7 +106,8 @@ jobs:
           git push
 ```
 
-The job that can write to your repository runs no code of this tool; the one that runs it cannot write. Pin the
+The job that can write to your repository runs no code of this tool; the one that runs it cannot write. If you change
+`out`, change the `cards/` paths in the commit job to match. Expect a commit each run: the date on the cards changes. Pin the
 actions to commits if your repository's policy asks for it. For al-folio or academicpages, point `out` at a folder
 the site serves (`assets/img/` for example) and use the cards as images.
 
@@ -117,6 +128,8 @@ say "OpenAlex" and the date; `scholar.json` lists the exact API URLs.
 - The numbers are OpenAlex's: a split or merged author record, or a paper attributed to the wrong person, shows on the
   cards as it is there. Fix it at OpenAlex (it accepts corrections), and the next run picks it up.
 - One author record per card; records split across several IDs are not added up.
+- OpenAlex's own data has errors: a search can return a record whose name is several people's, and an ORCID can lead
+  to someone else's record. The tool prints whom it fetched, and warns when the record's ORCID is not the one asked.
 
 ## Also in this toolkit
 

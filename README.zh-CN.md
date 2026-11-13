@@ -3,7 +3,7 @@
 # scholar-cards
 
 **把你的被引次数、h 指数和高被引论文做成卡片，放到个人主页或 GitHub 主页，并由 GitHub Action 定时更新。** 数据来自
-[OpenAlex](https://openalex.org)（开放数据，无需注册），每个数字都能追溯到对应的 API 记录；卡片是自包含的 SVG，会跟随读者的亮色/暗色主题。
+[OpenAlex](https://openalex.org)（开放数据，无需注册），每个数字都能追溯到对应的 API 记录；卡片是自包含的 SVG，可以是亮色、暗色，或跟随读者的系统设置。
 
 <a href="https://github.com/zch6a/scholar-cards/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/zch6a/scholar-cards/actions/workflows/ci.yml/badge.svg"></a>
 <img alt="Python 3.10+" src="https://img.shields.io/badge/python-3.10%2B-blue">
@@ -33,7 +33,7 @@ scholar-cards 从你的 OpenAlex 记录生成卡片，定时工作流让它们�
 uvx --from git+https://github.com/zch6a/scholar-cards scholar-cards search "Your Name"
 ```
 
-列出 OpenAlex 里这个名字对应的作者记录（ID、机构、论文数与被引数）。OpenAlex 有时会把一个人拆成几条记录：选带你 ORCID 的那条，
+列出 OpenAlex 里这个名字对应的作者记录（ID、ORCID、机构、论文数与被引数）。OpenAlex 有时会把一个人拆成几条记录：选带你 ORCID 的那条，
 或者最大的那条；工具不会替你挑。然后：
 
 ```bash
@@ -44,6 +44,15 @@ scholar-cards A5023888391 -o cards/          # 或者你的 ORCID：0000-0002-18
 
 ```markdown
 ![我的被引](cards/stats.svg)
+```
+
+`--theme auto` 跟随读者的系统配色。如果要跟随读者在 GitHub 上选的主题，两种都生成（`--theme light,dark`），让 GitHub 来选：
+
+```html
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="cards/stats-dark.svg">
+  <img alt="我的被引" src="cards/stats-light.svg">
+</picture>
 ```
 
 | 选项 | |
@@ -93,7 +102,7 @@ jobs:
           git push
 ```
 
-能写你仓库的那个任务不运行本工具的任何代码；运行本工具的任务没有写权限。如果你的仓库要求，把 action 固定到具体提交。
+能写你仓库的那个任务不运行本工具的任何代码；运行本工具的任务没有写权限。改了 `out` 的话，提交任务里的 `cards/` 路径也要一起改。每次运行通常都会产生一次提交：卡片上的日期会变。如果你的仓库要求，把 action 固定到具体提交。
 用 al-folio 或 academicpages 时，把 `out` 指向网站会发布的目录（例如 `assets/img/`），把卡片当图片用。
 
 ## 这些数字是什么
@@ -111,6 +120,7 @@ jobs:
 
 - 数字就是 OpenAlex 的：作者记录被拆分或合并、论文归错了人，卡片上会原样显示。到 OpenAlex 更正（它接受更正），下次运行就会更新。
 - 一张卡片对应一条作者记录；拆成多个 ID 的记录不会被加总。
+- OpenAlex 自己的数据有错：搜索可能返回一条名字是好几个人的记录，ORCID 也可能指到别人的记录。工具会打印取到的是谁，记录里的 ORCID 与你给的不一致时会警告。
 
 ## 同一套工具
 

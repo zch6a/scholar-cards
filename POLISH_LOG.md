@@ -81,3 +81,42 @@ in a test repository).
   systems × Python 3.10/3.13, and the action job on the example's snapshot.
 
 Next: polishing round 1.
+
+### 2026-11-13 — polishing round 1
+
+**Real records** (keyless, a handful of requests; cards to a temporary folder, deleted after): a name in Chinese
+characters, ORCID's own example ID, a very large record, a five-paper record with no citations. Found:
+
+- OpenAlex's data is wrong in ways the tool should show, not hide: the Chinese-name search returned a record whose
+  "name" is seven people's names, and ORCID's example ID led to someone else's record. `fetch` now prints whom it
+  got (name, ID, works, citations, the record's ORCID), and warns when the record's ORCID is not the one asked.
+- OpenAlex leaves out years with nothing counted, so the bars skipped them and the years were unevenly spaced; an
+  all-zero chart was empty. Missing years are zeros now, up to the snapshot's year, and an empty chart says "No
+  citations counted yet" (or "in these years", when the author has citations before them).
+
+**Independent review** (11 confirmed, all fixed, tests in `tests/test_review_round1.py`):
+
+1. A control character (or a lone surrogate) in a name, title or venue, as PDF-extracted titles carry, made every card
+   unparseable (or the write fail): characters XML cannot hold are removed.
+2. `--top N` never drew more than five papers: the works card is drawn with N.
+3. A malformed snapshot crashed with a traceback (extra keys, missing fields, a string format number, nulls): exit 2
+   with "not a valid scholar-cards snapshot"; unknown keys are ignored.
+4. `search` did not show the ORCID it tells you to pick by: it does.
+5. `--top 0`, negative or over 50 were taken silently: 1 to 50.
+6. A `null` or list body, or a connection cut mid-answer, escaped as tracebacks; a non-JSON body gave a bare message.
+   Now OpenAlex errors naming the URL; network failures are retried like a 5xx.
+7. 999,950 printed as "1000.0k": "1.0M".
+8. "No citations counted yet" beside a stats card with citations (all before the last ten years): the other message.
+9. `--cards ","` wrote nothing and exited 0: an error.
+10. IDs matched anywhere in the text (`MA123`, `https://example.com/A5`, `foo0000-…`): whole matches only, with the
+    OpenAlex and ORCID URL forms and `orcid:`.
+11. An extra argument was ignored (`scholar-cards A1 junk`): an error.
+
+From its "plausible" list: `Retry-After` is read case-insensitively (real answers use lower-case header names);
+capitals and digits count wider when cutting titles; the README says `auto` follows the reader's system setting and
+shows the `<picture>` form for GitHub's own theme, says the commit job's paths follow `out`, and that a commit comes
+each run (the date changes).
+
+Tests: 48 (were 31), Python 3.10 and 3.13; ruff, mypy clean.
+
+Next: round 2.

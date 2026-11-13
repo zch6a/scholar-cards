@@ -17,8 +17,8 @@ from pathlib import Path
 
 from . import __version__
 from .model import Scholar
-from .openalex import Client, OpenAlexError
-from .svg import CARDS, THEMES
+from .openalex import ORCID, Client, OpenAlexError
+from .svg import CARDS, THEMES, render
 
 
 def fetch(who: str, client: Client, top: int = 5, today: str | None = None) -> Scholar:
@@ -28,13 +28,13 @@ def fetch(who: str, client: Client, top: int = 5, today: str | None = None) -> S
     return Scholar.from_openalex(author, works, retrieved=today or dt.date.today().isoformat(), sources=list(client.requested))
 
 
-def write_cards(s: Scholar, out: Path, cards: list[str], themes: list[str], lang: str) -> list[Path]:
+def write_cards(s: Scholar, out: Path, cards: list[str], themes: list[str], lang: str, top: int = 5) -> list[Path]:
     out.mkdir(parents=True, exist_ok=True)
     written = []
     for card in cards:
         for theme in themes:
             path = out / (f"{card}.svg" if len(themes) == 1 else f"{card}-{theme}.svg")
-            path.write_text(CARDS[card](s, theme, lang), encoding="utf-8")
+            path.write_text(render(card, s, theme, lang, top), encoding="utf-8")
             written.append(path)
     return written
 
@@ -47,7 +47,9 @@ def _search(name: str, client: Client) -> int:
     for a in found:
         inst = ", ".join(i.get("display_name", "") for i in (a.get("last_known_institutions") or [])[:2])
         short = str(a.get("id", "")).rsplit("/", 1)[-1]
-        print(f"{short:14} {a.get('display_name', '')}  ·  {a.get('works_count', 0)} works, {a.get('cited_by_count', 0)} citations  ·  {inst}")
+        orcid = "ORCID " + str(a["orcid"]).rsplit("/", 1)[-1] if a.get("orcid") else "no ORCID"
+        print(f"{short:14} {a.get('display_name', '')}  ·  {orcid}  ·  {a.get('works_count', 0)} works, "
+              f"{a.get('cited_by_count', 0)} citations  ·  {inst}")  # fmt: skip
     print("\nSeveral records can be the same person (OpenAlex splits some profiles): pick the one with your ORCID, or the largest.")
     return 0
 
@@ -70,6 +72,12 @@ def main(argv: list[str] | None = None) -> int:
 
     cards = [c.strip() for c in args.cards.split(",") if c.strip()]
     themes = [t.strip() for t in args.theme.split(",") if t.strip()]
+    if not cards:
+        ap.error(f"--cards names no card; the cards are {', '.join(CARDS)}")
+    if not 1 <= args.top <= 50:
+        ap.error("--top is from 1 to 50")
+    if args.name and args.who != "search":
+        ap.error(f"one author at a time (got also {args.name!r}); a name to look up goes after search")
     if bad := [c for c in cards if c not in CARDS]:
         ap.error(f"unknown card(s) {', '.join(bad)}; the cards are {', '.join(CARDS)}")
     if bad := [t for t in themes if t not in (*THEMES, "auto")]:
@@ -83,11 +91,18 @@ def main(argv: list[str] | None = None) -> int:
             scholar = Scholar.load(args.snapshot)
         elif args.who:
             scholar = fetch(args.who, Client(), args.top)
+            short = scholar.id.rsplit("/", 1)[-1]
+            print(f"scholar-cards: fetched {scholar.name} ({short}): {scholar.works_count} works, {scholar.cited_by_count} citations"
+                  + (f", ORCID {scholar.orcid.rsplit('/', 1)[-1]}" if scholar.orcid else ""), file=sys.stderr)  # fmt: skip
+            asked = ORCID.search(args.who.strip().rstrip("/"))
+            if asked and not scholar.orcid.upper().endswith(asked.group(1).upper()):
+                print(f"scholar-cards: warning: OpenAlex gave this record for ORCID {asked.group(1)}, but the record's own ORCID is "
+                      f"{scholar.orcid.rsplit('/', 1)[-1] or 'none'}: check it is you (scholar-cards search NAME)", file=sys.stderr)  # fmt: skip
             args.out.mkdir(parents=True, exist_ok=True)
             (args.out / "scholar.json").write_text(scholar.to_json(), encoding="utf-8")
         else:
             ap.error("give an author (an OpenAlex ID or an ORCID), search NAME, or --snapshot FILE")
-        for path in write_cards(scholar, args.out, cards, themes, args.lang):
+        for path in write_cards(scholar, args.out, cards, themes, args.lang, args.top):
             print(f"scholar-cards: wrote {path.as_posix()}")
     except OpenAlexError as e:
         print(f"scholar-cards: {e}", file=sys.stderr)

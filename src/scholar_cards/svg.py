@@ -5,8 +5,9 @@ from __future__ import annotations
 
 import hashlib
 import math
+import re
 import unicodedata
-from xml.sax.saxutils import escape
+from xml.sax.saxutils import escape as _escape
 
 from .model import Scholar
 
@@ -19,21 +20,40 @@ THEMES = {
 LABELS = {
     "en": {"citations": "Citations", "h_index": "h-index", "i10_index": "i10-index", "works": "Works", "mean2": "2-year mean citedness",
            "top": "Most cited papers", "per_year": "Citations per year", "source": "OpenAlex", "as_of": "as of",
-           "cited": "cited", "so_far": "so far"},
+           "cited": "cited", "so_far": "so far", "none_yet": "No citations counted yet",
+           "none_recent": "No citations counted in these years"},
     "zh": {"citations": "总被引", "h_index": "h 指数", "i10_index": "i10 指数", "works": "论文数", "mean2": "近两年篇均被引",
-           "top": "高被引论文", "per_year": "逐年被引", "source": "OpenAlex", "as_of": "数据日期", "cited": "被引", "so_far": "截至目前"},
+           "top": "高被引论文", "per_year": "逐年被引", "source": "OpenAlex", "as_of": "数据日期", "cited": "被引", "so_far": "截至目前",
+           "none_yet": "尚无被引记录", "none_recent": "这些年份没有被引记录"},
 }  # fmt: skip
+
+
+# characters XML 1.0 does not allow (controls, lone surrogates, U+FFFE/U+FFFF): titles taken from PDFs carry some
+_NOT_XML = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\ud800-\udfff\ufffe\uffff]")
+
+
+def clean(s: str) -> str:
+    r"""Text with the characters XML cannot hold removed (a control character makes the whole card unreadable).
+
+    >>> clean("Title\x0bwith\x00controls\ud800")
+    'Titlewithcontrols'
+    """
+    return _NOT_XML.sub("", s)
+
+
+def escape(s: str, entities: dict[str, str] | None = None) -> str:
+    return _escape(clean(s), entities or {})
 
 
 def number(n: float | None) -> str:
     """A count as cards print it.
 
-    >>> number(987), number(12345), number(1_234_567), number(None)
-    ('987', '12.3k', '1.2M', '–')
+    >>> number(987), number(12345), number(1_234_567), number(None), number(999_950)
+    ('987', '12.3k', '1.2M', '–', '1.0M')
     """
     if n is None:
         return "–"
-    if abs(n) >= 1_000_000:
+    if abs(n) >= 999_950:  # 999,950 would round to "1000.0k"
         return f"{n / 1_000_000:.1f}M"
     if abs(n) >= 10_000:
         return f"{n / 1000:.1f}k"
@@ -41,8 +61,9 @@ def number(n: float | None) -> str:
 
 
 def text_width(s: str, size: float) -> float:
-    """About how wide a line of text is: wide (CJK) characters count as one em, the others as 0.55."""
-    return sum(size if unicodedata.east_asian_width(c) in "WF" else 0.55 * size for c in s)
+    """About how wide a line of text is: wide (CJK) characters count as one em, capitals and digits 0.66, the others 0.55
+    (erring wide: a title cut a little early beats one running into the number beside it)."""
+    return sum(size if unicodedata.east_asian_width(c) in "WF" else 0.66 * size if c.isupper() or c.isdigit() else 0.55 * size for c in s)
 
 
 def clip(s: str, size: float, width: float) -> str:
@@ -132,14 +153,17 @@ def works_card(s: Scholar, theme: str = "auto", lang: str = "en", n: int = 5) ->
 
 
 def citations_card(s: Scholar, theme: str = "auto", lang: str = "en", years: int = 10) -> str:
-    """Citations per year as bars (the last `years` years OpenAlex counts), the largest labelled."""
+    """Citations per year as bars: the last `years` years up to the snapshot's (OpenAlex leaves out years with nothing
+    counted; they are zeros here, so that the years are evenly spaced), the largest labelled."""
     words = LABELS[lang]
-    data = s.counts_by_year[-years:]
+    current = int(s.retrieved[:4]) if s.retrieved[:4].isdigit() else None  # its bar is faded: the year is not over
+    data = _year_range(s.counts_by_year, current, years)
     top, height_bars, left, right = 62, 110, 25, WIDTH - 25
     body = []
+    if data and not any(c for _, _, c in data):
+        message = words["none_yet"] if not s.cited_by_count else words["none_recent"]
+        body.append(f'<text class="muted" x="{WIDTH / 2:.0f}" y="{top + height_bars / 2:.0f}" text-anchor="middle">{escape(message)}</text>')
     if data:
-        # the year of the snapshot is not over: its bar is faded and marked, not read as a drop
-        current = int(s.retrieved[:4]) if s.retrieved[:4].isdigit() else None
         peak = max(c for _, _, c in data) or 1
         step = (right - left) / len(data)
         bar = max(4.0, step * 0.62)
@@ -153,7 +177,7 @@ def citations_card(s: Scholar, theme: str = "auto", lang: str = "en", years: int
             )
             label = f"{year % 100:02d}" + ("*" if year == current else "")
             body.append(f'<text class="muted" x="{x + bar / 2:.1f}" y="{top + height_bars + 16}" text-anchor="middle">{label}</text>')
-            if cites == peak:
+            if cites == peak and cites:
                 body.append(
                     f'<text class="muted" x="{x + bar / 2:.1f}" y="{top + height_bars - h - 5:.1f}" text-anchor="middle">'
                     f"{escape(number(cites))}</text>"
@@ -164,4 +188,25 @@ def citations_card(s: Scholar, theme: str = "auto", lang: str = "en", years: int
     return _frame(math.ceil(top + height_bars + 58), theme, f"{words['per_year']} · {s.name}", body, footer)
 
 
+def _year_range(counts: list[tuple[int, int, int]], current: int | None, years: int) -> list[tuple[int, int, int]]:
+    """The last `years` years of counts, missing years as zeros, ending at the snapshot's year (or the last counted).
+
+    >>> _year_range([(2019, 1, 5), (2022, 2, 7)], 2023, 4)
+    [(2020, 0, 0), (2021, 0, 0), (2022, 2, 7), (2023, 0, 0)]
+    >>> _year_range([(2019, 1, 5)], None, 10)
+    [(2019, 1, 5)]
+    """
+    if not counts:
+        return []
+    by_year = {y: (y, w, c) for y, w, c in counts}
+    end = max(current or 0, max(by_year))
+    start = max(min(by_year), end - years + 1)
+    return [by_year.get(y, (y, 0, 0)) for y in range(start, end + 1)]
+
+
 CARDS = {"stats": stats_card, "works": works_card, "citations": citations_card}
+
+
+def render(card: str, s: Scholar, theme: str = "auto", lang: str = "en", top: int = 5) -> str:
+    """One card by name; `top` papers on the works card."""
+    return works_card(s, theme, lang, top) if card == "works" else CARDS[card](s, theme, lang)

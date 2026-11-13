@@ -106,7 +106,29 @@ def test_the_current_year_is_marked_partial() -> None:
     s.retrieved = "2025-03-01"  # the snapshot's year is the last bar's
     bars = citations_card(s)
     assert bars.count('opacity="0.45"') == 1 and "2025: 1100 (so far)" in bars and ">25*<" in bars and "*so far" in bars
-    assert 'opacity="0.45"' not in citations_card(scholar())  # retrieved 2026: 2025 is a whole year
+    whole = citations_card(scholar())  # retrieved in 2026: 2025 is a whole year, 2026 the partial one (none counted yet)
+    assert "<title>2025: 1100</title>" in whole and "2026: 0 (so far)" in whole and whole.count('opacity="0.45"') == 1
+
+
+def test_missing_years_are_zeros_and_no_citations_says_so() -> None:
+    s = scholar()
+    s.counts_by_year = [(2020, 1, 0), (2024, 2, 0)]
+    bars = citations_card(s)
+    assert bars.count('<rect class="bar"') == 7 and "No citations counted in these years" in bars  # 2020 to 2026, evenly spaced
+    s.cited_by_count = 0
+    assert "No citations counted yet" in citations_card(s) and "尚无被引记录" in citations_card(s, lang="zh")
+
+
+def test_the_cli_says_whom_it_fetched_and_warns_on_an_orcid_mismatch(monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+                                                                      capsys: pytest.CaptureFixture[str]) -> None:  # fmt: skip
+    import scholar_cards.cli as cli
+
+    other = dict(AUTHOR, orcid="https://orcid.org/0000-0001-0000-0000")
+    monkeypatch.setattr(cli, "Client", lambda: Client(key="", get=FakeAPI([(200, {}, other), (200, {}, WORKS)])))
+    assert main(["0000-0002-1825-009X", "-o", str(tmp_path)]) == 0
+    err = capsys.readouterr().err
+    assert "fetched Ada <Lovelace> & Co (A123): 42 works, 12345 citations, ORCID 0000-0001-0000-0000" in err
+    assert "warning: OpenAlex gave this record for ORCID 0000-0002-1825-009X" in err
 
 
 def test_each_card_scopes_its_css() -> None:

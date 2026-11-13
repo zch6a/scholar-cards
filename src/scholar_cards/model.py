@@ -83,12 +83,16 @@ class Scholar:
         data = json.loads(text)
         if not isinstance(data, dict) or data.get("tool") != "scholar-cards":
             raise ValueError("not a scholar-cards snapshot")
-        if data.get("snapshot", 0) > SNAPSHOT_VERSION:
-            raise ValueError(f"a snapshot from a newer scholar-cards (format {data.get('snapshot')}); update scholar-cards")
-        data = {k: v for k, v in data.items() if k in cls.__dataclass_fields__}
-        data["counts_by_year"] = [tuple(x) for x in data.get("counts_by_year", [])]
-        data["top_works"] = [Work(**w) for w in data.get("top_works", [])]
-        return cls(**data)
+        version = data.get("snapshot", 0)
+        if not isinstance(version, int) or version > SNAPSHOT_VERSION:
+            raise ValueError(f"a snapshot from a newer scholar-cards, or not one (format {version!r}); update scholar-cards")
+        try:
+            data = {k: v for k, v in data.items() if k in cls.__dataclass_fields__}
+            data["counts_by_year"] = [(int(y), int(w), int(c)) for y, w, c in data.get("counts_by_year") or []]
+            data["top_works"] = [Work(**{k: v for k, v in w.items() if k in Work.__dataclass_fields__}) for w in data.get("top_works") or []]
+            return cls(**data)
+        except (TypeError, ValueError, AttributeError) as e:
+            raise ValueError(f"not a valid scholar-cards snapshot ({e})") from e
 
     @classmethod
     def load(cls, path: Path) -> Scholar:
