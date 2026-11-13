@@ -1,9 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="495" height="238" viewBox="0 0 495 238" role="img" id="sc-fa65c6e6d3" aria-label="Dr. Ada Example">
-<title>Dr. Ada Example</title>
-<style>#sc-fa65c6e6d3 text{font-family:-apple-system, 'Segoe UI', Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif}#sc-fa65c6e6d3 .title{font-size:18px;font-weight:600}#sc-fa65c6e6d3 .text{font-size:14px}#sc-fa65c6e6d3 .muted{font-size:11px}#sc-fa65c6e6d3 .bg{fill:#0d1117;stroke:#30363d}#sc-fa65c6e6d3 .title{fill:#58a6ff}#sc-fa65c6e6d3 .text{fill:#c9d1d9}#sc-fa65c6e6d3 .muted{fill:#8b949e}#sc-fa65c6e6d3 .bar{fill:#58a6ff}</style>
+<svg xmlns="http://www.w3.org/2000/svg" width="495" height="238" viewBox="0 0 495 238" role="img" id="sc-3cef26a303" xml:lang="en" aria-labelledby="sc-3cef26a303-t sc-3cef26a303-d">
+<title id="sc-3cef26a303-t">Dr. Ada Example</title>
+<desc id="sc-3cef26a303-d">Citations 6,088; h-index 27; i10-index 48; Works 99; 2-year mean citedness 6.40; Example Institute of Technology. OpenAlex · as of 2026-11-13</desc>
+<style>#sc-3cef26a303 text{font-family:-apple-system, 'Segoe UI', Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif}#sc-3cef26a303 .title{font-size:18px;font-weight:600}#sc-3cef26a303 .text{font-size:14px}#sc-3cef26a303 .muted{font-size:11px}#sc-3cef26a303 .bg{fill:#0d1117;stroke:#30363d}#sc-3cef26a303 .title{fill:#58a6ff}#sc-3cef26a303 .text{fill:#c9d1d9}#sc-3cef26a303 .muted{fill:#8b949e}#sc-3cef26a303 .bar{fill:#58a6ff}#sc-3cef26a303 .partial{fill:#58a6ff;fill-opacity:0.35;stroke:#58a6ff;stroke-width:1.5}</style>
 <rect class="bg" x="0.5" y="0.5" rx="4.5" width="494" height="237"/>
-<text class="title" x="25" y="35">Dr. Ada Example</text>
-<text class="muted" x="25" y="54">Example Institute of Technology</text>
+<text class="title" x="25" y="35">⁨Dr. Ada Example⁩</text>
+<text class="muted" x="25" y="54">⁨Example Institute of Technology⁩</text>
 <text class="text" x="25" y="88">Citations</text>
 <text class="text" x="470" y="88" text-anchor="end" font-weight="600">6,088</text>
 <text class="text" x="25" y="114">h-index</text>

@@ -120,3 +120,36 @@ each run (the date changes).
 Tests: 48 (were 31), Python 3.10 and 3.13; ruff, mypy clean.
 
 Next: round 2.
+
+### 2026-11-13 — polishing round 2
+
+Round 1's CI was green on every job. `--help` brought up to date (search shows ORCIDs; `auto` follows the reader's
+system setting); the wheel holds only the package, the sdist no images.
+
+**Second independent review** (accessibility, contrast, embedding, rendering edges; 10 confirmed, all fixed, tests in
+`tests/test_review_round2.py`):
+
+1. Round 1's snapshot fix was partial: a field of the wrong type (`"cited_by_count": "6088"`, `"name": 123`, a null
+   title) still crashed, with exit 1. Every field is now checked (text, whole numbers of 0 or more, a mean of 0 or
+   more), exit 2 with what is wrong; a snapshot saved with a BOM loads.
+2. All-negative counts drew a bar over the title: counts from the API are at least 0, a snapshot's must be.
+3. Wide letters (W, M) overflowed the card and ran into the citation count: wider estimates (W and M 0.95 em,
+   capitals 0.72, bold 8% more) and more room beside the number.
+4. Contrast: the light title was 3.9:1, the faded current-year bar 1.8:1. Now a darker blue (5.2:1), muted text
+   6.2:1, and the partial bar outlined in the bar colour (its outline 5.2:1) as well as faded. A test checks WCAG AA.
+5. Screen readers got only the card's title: each card has a `<desc>` with every number (or each paper, or each
+   year), `aria-labelledby` the title and the description.
+6. The two-year mean printed "3" or "6.40": always two decimals; counts are whole.
+7. Bidi: a Hebrew name's parentheses and an Arabic title's ellipsis landed on the wrong side: names, titles, venues
+   and institutions are isolated (U+2068 … U+2069).
+8. Cutting split an emoji joined by ZWJ, or a letter from its accent: never inside a cluster.
+9. Forty years of bars ran their labels together: a label every few years, counted from the last.
+10. The cards had no language: `xml:lang` (en, zh).
+
+Also from its list: the README's recipe has a concurrency group (a manual run cannot race the weekly one), clears the
+old cards before the new ones (a theme dropped leaves no stale files) and commits deletions; for al-folio, whose
+dark switch does not change the reader's system setting, it suggests a fixed theme.
+
+Tests: 65 (were 48), Python 3.10 and 3.13; ruff, mypy clean.
+
+Next: round 3.

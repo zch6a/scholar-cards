@@ -1,9 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="495" height="238" viewBox="0 0 495 238" role="img" id="sc-3e5b14c0bd" aria-label="Dr. Ada Example">
-<title>Dr. Ada Example</title>
-<style>#sc-3e5b14c0bd text{font-family:-apple-system, 'Segoe UI', Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif}#sc-3e5b14c0bd .title{font-size:18px;font-weight:600}#sc-3e5b14c0bd .text{font-size:14px}#sc-3e5b14c0bd .muted{font-size:11px}#sc-3e5b14c0bd .bg{fill:#ffffff;stroke:#e4e2e2}#sc-3e5b14c0bd .title{fill:#2f80ed}#sc-3e5b14c0bd .text{fill:#434d58}#sc-3e5b14c0bd .muted{fill:#6a737d}#sc-3e5b14c0bd .bar{fill:#2f80ed}@media (prefers-color-scheme: dark){#sc-3e5b14c0bd .bg{fill:#0d1117;stroke:#30363d}#sc-3e5b14c0bd .title{fill:#58a6ff}#sc-3e5b14c0bd .text{fill:#c9d1d9}#sc-3e5b14c0bd .muted{fill:#8b949e}#sc-3e5b14c0bd .bar{fill:#58a6ff}}</style>
+<svg xmlns="http://www.w3.org/2000/svg" width="495" height="238" viewBox="0 0 495 238" role="img" id="sc-d3ec09190b" xml:lang="en" aria-labelledby="sc-d3ec09190b-t sc-d3ec09190b-d">
+<title id="sc-d3ec09190b-t">Dr. Ada Example</title>
+<desc id="sc-d3ec09190b-d">Citations 6,088; h-index 27; i10-index 48; Works 99; 2-year mean citedness 6.40; Example Institute of Technology. OpenAlex · as of 2026-11-13</desc>
+<style>#sc-d3ec09190b text{font-family:-apple-system, 'Segoe UI', Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif}#sc-d3ec09190b .title{font-size:18px;font-weight:600}#sc-d3ec09190b .text{font-size:14px}#sc-d3ec09190b .muted{font-size:11px}#sc-d3ec09190b .bg{fill:#ffffff;stroke:#d0d7de}#sc-d3ec09190b .title{fill:#0969da}#sc-d3ec09190b .text{fill:#424a53}#sc-d3ec09190b .muted{fill:#57606a}#sc-d3ec09190b .bar{fill:#0969da}#sc-d3ec09190b .partial{fill:#0969da;fill-opacity:0.35;stroke:#0969da;stroke-width:1.5}@media (prefers-color-scheme: dark){#sc-d3ec09190b .bg{fill:#0d1117;stroke:#30363d}#sc-d3ec09190b .title{fill:#58a6ff}#sc-d3ec09190b .text{fill:#c9d1d9}#sc-d3ec09190b .muted{fill:#8b949e}#sc-d3ec09190b .bar{fill:#58a6ff}#sc-d3ec09190b .partial{fill:#58a6ff;fill-opacity:0.35;stroke:#58a6ff;stroke-width:1.5}}</style>
 <rect class="bg" x="0.5" y="0.5" rx="4.5" width="494" height="237"/>
-<text class="title" x="25" y="35">Dr. Ada Example</text>
-<text class="muted" x="25" y="54">Example Institute of Technology</text>
+<text class="title" x="25" y="35">⁨Dr. Ada Example⁩</text>
+<text class="muted" x="25" y="54">⁨Example Institute of Technology⁩</text>
 <text class="text" x="25" y="88">Citations</text>
 <text class="text" x="470" y="88" text-anchor="end" font-weight="600">6,088</text>
 <text class="text" x="25" y="114">h-index</text>

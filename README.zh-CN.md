@@ -76,6 +76,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+concurrency: scholar-cards             # one run at a time: a manual run cannot race the weekly one
 jobs:
   cards:                               # 用只读权限取数并生成卡片
     runs-on: ubuntu-latest
@@ -93,17 +94,18 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+      - run: rm -rf cards                # cards no longer made (a theme dropped) go too
       - uses: actions/download-artifact@v4
         with: { name: cards, path: cards/ }
       - run: |
-          git add cards
+          git add -A cards
           git diff --cached --quiet && exit 0
           git -c user.name=scholar-cards -c user.email=actions@users.noreply.github.com commit -m "Update scholar cards"
           git push
 ```
 
 能写你仓库的那个任务不运行本工具的任何代码；运行本工具的任务没有写权限。改了 `out` 的话，提交任务里的 `cards/` 路径也要一起改。每次运行通常都会产生一次提交：卡片上的日期会变。如果你的仓库要求，把 action 固定到具体提交。
-用 al-folio 或 academicpages 时，把 `out` 指向网站会发布的目录（例如 `assets/img/`），把卡片当图片用。
+用 al-folio 或 academicpages 时，把 `out` 指向网站会发布的目录（例如 `assets/img/`），把卡片当图片用。al-folio 自带的暗色开关不会改变读者的系统设置，所以在那里用与网站一致的 `--theme light` 或 `dark` 比 `auto` 更合适。
 
 ## 这些数字是什么
 

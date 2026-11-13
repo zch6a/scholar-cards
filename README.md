@@ -80,6 +80,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+concurrency: scholar-cards             # one run at a time: a manual run cannot race the weekly one
 jobs:
   cards:                               # fetches and renders, with a read-only token
     runs-on: ubuntu-latest
@@ -97,10 +98,11 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+      - run: rm -rf cards                # cards no longer made (a theme dropped) go too
       - uses: actions/download-artifact@v4
         with: { name: cards, path: cards/ }
       - run: |
-          git add cards
+          git add -A cards
           git diff --cached --quiet && exit 0
           git -c user.name=scholar-cards -c user.email=actions@users.noreply.github.com commit -m "Update scholar cards"
           git push
@@ -109,7 +111,8 @@ jobs:
 The job that can write to your repository runs no code of this tool; the one that runs it cannot write. If you change
 `out`, change the `cards/` paths in the commit job to match. Expect a commit each run: the date on the cards changes. Pin the
 actions to commits if your repository's policy asks for it. For al-folio or academicpages, point `out` at a folder
-the site serves (`assets/img/` for example) and use the cards as images.
+the site serves (`assets/img/` for example) and use the cards as images. al-folio's own dark-mode switch does not change the
+reader's system setting, so there `--theme light` or `dark` (matching the site) reads better than `auto`.
 
 ## What the numbers are
 

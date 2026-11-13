@@ -1,8 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="495" height="230" viewBox="0 0 495 230" role="img" id="sc-3200db0eb0" aria-label="Citations per year · Dr. Ada Example">
-<title>Citations per year · Dr. Ada Example</title>
-<style>#sc-3200db0eb0 text{font-family:-apple-system, 'Segoe UI', Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif}#sc-3200db0eb0 .title{font-size:18px;font-weight:600}#sc-3200db0eb0 .text{font-size:14px}#sc-3200db0eb0 .muted{font-size:11px}#sc-3200db0eb0 .bg{fill:#ffffff;stroke:#e4e2e2}#sc-3200db0eb0 .title{fill:#2f80ed}#sc-3200db0eb0 .text{fill:#434d58}#sc-3200db0eb0 .muted{fill:#6a737d}#sc-3200db0eb0 .bar{fill:#2f80ed}@media (prefers-color-scheme: dark){#sc-3200db0eb0 .bg{fill:#0d1117;stroke:#30363d}#sc-3200db0eb0 .title{fill:#58a6ff}#sc-3200db0eb0 .text{fill:#c9d1d9}#sc-3200db0eb0 .muted{fill:#8b949e}#sc-3200db0eb0 .bar{fill:#58a6ff}}</style>
+<svg xmlns="http://www.w3.org/2000/svg" width="495" height="230" viewBox="0 0 495 230" role="img" id="sc-5aac15b29a" xml:lang="en" aria-labelledby="sc-5aac15b29a-t sc-5aac15b29a-d">
+<title id="sc-5aac15b29a-t">Citations per year · Dr. Ada Example</title>
+<desc id="sc-5aac15b29a-d">2017: 98; 2018: 160; 2019: 194; 2020: 267; 2021: 368; 2022: 513; 2023: 719; 2024: 1012; 2025: 1384; 2026: 1190 (so far). OpenAlex · as of 2026-11-13 · *so far</desc>
+<style>#sc-5aac15b29a text{font-family:-apple-system, 'Segoe UI', Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif}#sc-5aac15b29a .title{font-size:18px;font-weight:600}#sc-5aac15b29a .text{font-size:14px}#sc-5aac15b29a .muted{font-size:11px}#sc-5aac15b29a .bg{fill:#ffffff;stroke:#d0d7de}#sc-5aac15b29a .title{fill:#0969da}#sc-5aac15b29a .text{fill:#424a53}#sc-5aac15b29a .muted{fill:#57606a}#sc-5aac15b29a .bar{fill:#0969da}#sc-5aac15b29a .partial{fill:#0969da;fill-opacity:0.35;stroke:#0969da;stroke-width:1.5}@media (prefers-color-scheme: dark){#sc-5aac15b29a .bg{fill:#0d1117;stroke:#30363d}#sc-5aac15b29a .title{fill:#58a6ff}#sc-5aac15b29a .text{fill:#c9d1d9}#sc-5aac15b29a .muted{fill:#8b949e}#sc-5aac15b29a .bar{fill:#58a6ff}#sc-5aac15b29a .partial{fill:#58a6ff;fill-opacity:0.35;stroke:#58a6ff;stroke-width:1.5}}</style>
 <rect class="bg" x="0.5" y="0.5" rx="4.5" width="494" height="229"/>
-<text class="title" x="25" y="35">Citations per year · Dr. Ada Example</text>
+<text class="title" x="25" y="35">⁨Citations per year · Dr. Ada Example⁩</text>
 <rect class="bar" x="33.5" y="164.2" width="27.6" height="7.8" rx="2"><title>2017: 98</title></rect>
 <text class="muted" x="47.2" y="188" text-anchor="middle">17</text>
 <rect class="bar" x="78.0" y="159.3" width="27.6" height="12.7" rx="2"><title>2018: 160</title></rect>
@@ -22,7 +23,7 @@
 <rect class="bar" x="389.5" y="62.0" width="27.6" height="110.0" rx="2"><title>2025: 1384</title></rect>
 <text class="muted" x="403.2" y="188" text-anchor="middle">25</text>
 <text class="muted" x="403.2" y="57.0" text-anchor="middle">1,384</text>
-<rect class="bar" x="434.0" y="77.4" width="27.6" height="94.6" rx="2" opacity="0.45"><title>2026: 1190 (so far)</title></rect>
+<rect x="434.0" y="77.4" width="27.6" height="94.6" rx="2" class="bar partial"><title>2026: 1190 (so far)</title></rect>
 <text class="muted" x="447.8" y="188" text-anchor="middle">26*</text>
 <text class="muted" x="25" y="216">OpenAlex · as of 2026-11-13 · *so far</text>
 </svg>

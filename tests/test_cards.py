@@ -97,7 +97,7 @@ def test_what_the_cards_say() -> None:
     works = works_card(s)
     assert "Notes on the analytical engine" in works and "Taylor's Scientific Memoirs · 1843" in works and "…" in works
     bars = citations_card(s)
-    assert bars.count('class="bar"') == 10 and "2025: 1100" in bars and ">1,100<" in bars  # the last ten years, the peak labelled
+    assert bars.count('class="bar') == 10 and "2025: 1100" in bars and ">1,100<" in bars  # the last ten years, the peak labelled
     assert "总被引" in stats_card(s, lang="zh")
 
 
@@ -105,16 +105,16 @@ def test_the_current_year_is_marked_partial() -> None:
     s = scholar()
     s.retrieved = "2025-03-01"  # the snapshot's year is the last bar's
     bars = citations_card(s)
-    assert bars.count('opacity="0.45"') == 1 and "2025: 1100 (so far)" in bars and ">25*<" in bars and "*so far" in bars
+    assert bars.count('class="bar partial"') == 1 and "2025: 1100 (so far)" in bars and ">25*<" in bars and "*so far" in bars
     whole = citations_card(scholar())  # retrieved in 2026: 2025 is a whole year, 2026 the partial one (none counted yet)
-    assert "<title>2025: 1100</title>" in whole and "2026: 0 (so far)" in whole and whole.count('opacity="0.45"') == 1
+    assert "<title>2025: 1100</title>" in whole and "2026: 0 (so far)" in whole and whole.count('class="bar partial"') == 1
 
 
 def test_missing_years_are_zeros_and_no_citations_says_so() -> None:
     s = scholar()
     s.counts_by_year = [(2020, 1, 0), (2024, 2, 0)]
     bars = citations_card(s)
-    assert bars.count('<rect class="bar"') == 7 and "No citations counted in these years" in bars  # 2020 to 2026, evenly spaced
+    assert bars.count('class="bar') == 7 and "No citations counted in these years" in bars  # 2020 to 2026, evenly spaced
     s.cited_by_count = 0
     assert "No citations counted yet" in citations_card(s) and "尚无被引记录" in citations_card(s, lang="zh")
 

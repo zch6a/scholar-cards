@@ -54,15 +54,15 @@ class Scholar:
         if not institutions and author.get("last_known_institution"):
             institutions = [author["last_known_institution"]]
         years = sorted(
-            (int(c["year"]), int(c.get("works_count") or 0), int(c.get("cited_by_count") or 0))
+            (int(c["year"]), max(0, int(c.get("works_count") or 0)), max(0, int(c.get("cited_by_count") or 0)))
             for c in author.get("counts_by_year") or []
             if isinstance(c, dict) and isinstance(c.get("year"), int)
         )
         return cls(
             id=str(author.get("id") or ""),
             name=str(author.get("display_name") or ""),
-            works_count=int(author.get("works_count") or 0),
-            cited_by_count=int(author.get("cited_by_count") or 0),
+            works_count=max(0, int(author.get("works_count") or 0)),
+            cited_by_count=max(0, int(author.get("cited_by_count") or 0)),
             h_index=_int(stats.get("h_index")),
             i10_index=_int(stats.get("i10_index")),
             mean_citedness_2yr=_float(stats.get("2yr_mean_citedness")),
@@ -87,24 +87,79 @@ class Scholar:
         if not isinstance(version, int) or version > SNAPSHOT_VERSION:
             raise ValueError(f"a snapshot from a newer scholar-cards, or not one (format {version!r}); update scholar-cards")
         try:
-            data = {k: v for k, v in data.items() if k in cls.__dataclass_fields__}
-            data["counts_by_year"] = [(int(y), int(w), int(c)) for y, w, c in data.get("counts_by_year") or []]
-            data["top_works"] = [Work(**{k: v for k, v in w.items() if k in Work.__dataclass_fields__}) for w in data.get("top_works") or []]
-            return cls(**data)
-        except (TypeError, ValueError, AttributeError) as e:
+            return cls(
+                id=_text(data, "id"),
+                name=_text(data, "name"),
+                works_count=_count(data, "works_count"),
+                cited_by_count=_count(data, "cited_by_count"),
+                h_index=_count(data, "h_index", optional=True),
+                i10_index=_count(data, "i10_index", optional=True),
+                mean_citedness_2yr=_mean(data.get("mean_citedness_2yr")),
+                orcid=_text(data, "orcid", ""),
+                institution=_text(data, "institution", ""),
+                counts_by_year=[_year(x) for x in data.get("counts_by_year") or []],
+                top_works=[_snapshot_work(w) for w in data.get("top_works") or []],
+                retrieved=_text(data, "retrieved", ""),
+                sources=[str(x) for x in data.get("sources") or []],
+            )
+        except (TypeError, ValueError, AttributeError, KeyError) as e:
             raise ValueError(f"not a valid scholar-cards snapshot ({e})") from e
 
     @classmethod
     def load(cls, path: Path) -> Scholar:
-        return cls.from_json(path.read_text(encoding="utf-8"))
+        return cls.from_json(path.read_text(encoding="utf-8-sig"))  # an editor may have saved it with a BOM
+
+
+def _text(data: dict[str, Any], key: str, default: str | None = None) -> str:
+    v = data.get(key, default)
+    if not isinstance(v, str):
+        raise TypeError(f"{key} must be text, not {v!r}")
+    return v
+
+
+def _whole(v: object, what: str) -> int:
+    if isinstance(v, bool) or not isinstance(v, int) or v < 0:
+        raise TypeError(f"{what} must be a whole number of 0 or more, not {v!r}")
+    return v
+
+
+def _count(data: dict[str, Any], key: str, optional: bool = False) -> Any:
+    if optional and data.get(key) is None:
+        return None
+    return _whole(data.get(key), key)
+
+
+def _mean(v: object) -> float | None:
+    if v is None:
+        return None
+    if isinstance(v, bool) or not isinstance(v, (int, float)) or v < 0:
+        raise TypeError(f"mean_citedness_2yr must be a number of 0 or more, not {v!r}")
+    return float(v)
+
+
+def _year(x: Any) -> tuple[int, int, int]:
+    year, works, cites = x
+    return _whole(year, "a year"), _whole(works, "a year's works"), _whole(cites, "a year's citations")
+
+
+def _snapshot_work(w: dict[str, Any]) -> Work:
+    year = w.get("year")
+    return Work(
+        title=_text(w, "title"),
+        year=None if year is None else _whole(year, "a work's year"),
+        venue=_text(w, "venue", ""),
+        cited_by_count=_whole(w.get("cited_by_count"), "a work's cited_by_count"),
+        id=_text(w, "id", ""),
+        doi=_text(w, "doi", ""),
+    )
 
 
 def _int(v: object) -> int | None:
-    return int(v) if isinstance(v, (int, float)) and not isinstance(v, bool) else None
+    return max(0, int(v)) if isinstance(v, (int, float)) and not isinstance(v, bool) else None
 
 
 def _float(v: object) -> float | None:
-    return float(v) if isinstance(v, (int, float)) and not isinstance(v, bool) else None
+    return max(0.0, float(v)) if isinstance(v, (int, float)) and not isinstance(v, bool) else None
 
 
 def _work(w: dict[str, Any]) -> Work:
@@ -114,7 +169,7 @@ def _work(w: dict[str, Any]) -> Work:
         title=str(w.get("title") or w.get("display_name") or ""),
         year=_int(w.get("publication_year")),
         venue=str(source.get("display_name") or ""),
-        cited_by_count=int(w.get("cited_by_count") or 0),
+        cited_by_count=max(0, int(w.get("cited_by_count") or 0)),
         id=str(w.get("id") or ""),
         doi=str(w.get("doi") or ""),
     )
