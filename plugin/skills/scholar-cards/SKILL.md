@@ -1,8 +1,8 @@
 ---
 name: scholar-cards
-description: Make a researcher's citation cards with scholar-cards: citations, h-index, i10-index, most cited papers and citations per year from OpenAlex, as self-contained SVG for an academic homepage (al-folio, academicpages, Hugo) or a GitHub profile, and a GitHub workflow that refreshes them weekly. Use when the user wants their citation numbers on their homepage or profile, a badge or card of their scholarly impact, or their OpenAlex author ID.
+description: "Make a researcher's citation cards with scholar-cards: citations, h-index, i10-index, most cited papers and citations per year from OpenAlex, as self-contained SVG for an academic homepage (al-folio, academicpages, Hugo) or a GitHub profile, and a GitHub workflow that refreshes them weekly. Use when the user wants their citation numbers on their homepage or profile, a badge or card of their scholarly impact, or their OpenAlex author ID."
 license: MIT
-compatibility: Needs Python 3.10+ and uv. Runs scholar-cards with uvx from GitHub (git+https://github.com/zch6a/scholar-cards) unless installed. Reaches only the OpenAlex API; no key needed.
+compatibility: "Needs Python 3.10+ and uv. Runs scholar-cards with uvx from GitHub (git+https://github.com/zch6a/scholar-cards) unless installed. Reaches only the OpenAlex API; no key needed."
 metadata:
   homepage: https://github.com/zch6a/scholar-cards
 ---

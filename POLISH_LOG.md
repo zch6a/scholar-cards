@@ -235,3 +235,11 @@ CHANGELOG section, the wheel and the source archive, and `v0` points at it, so t
 
 Five rounds: real OpenAlex records of every shape, the recipe run in CI, three independent reviews (28 defects),
 29 tests at the first commit, 83 at the release.
+
+### 2026-11-14 — v0.1.1
+
+Putting every tool's skill into one marketplace (research-kit) and running `claude plugin validate` on each
+showed this one's SKILL.md frontmatter did not parse: a plain YAML value with `: ` inside ("…: text size…")
+starts a new key, so Claude Code loaded the skill with no description, and an agent would never pick it. The
+description and compatibility values are quoted (a JSON string is a YAML double-quoted scalar); validation passes.
+Released as 0.1.1 so that `v0`, which the marketplace installs from, carries the fix.

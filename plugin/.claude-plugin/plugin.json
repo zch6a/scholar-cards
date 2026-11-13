@@ -1,7 +1,7 @@
 {
   "name": "scholar-cards",
   "description": "A researcher's citations, h-index and most cited papers from OpenAlex as SVG cards for a homepage or GitHub profile, kept fresh by a GitHub workflow.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": { "name": "zch6a" },
   "homepage": "https://github.com/zch6a/scholar-cards",
   "repository": "https://github.com/zch6a/scholar-cards",
