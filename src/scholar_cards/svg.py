@@ -18,9 +18,10 @@ THEMES = {
 }
 LABELS = {
     "en": {"citations": "Citations", "h_index": "h-index", "i10_index": "i10-index", "works": "Works", "mean2": "2-year mean citedness",
-           "top": "Most cited papers", "per_year": "Citations per year", "source": "OpenAlex", "as_of": "as of", "cited": "cited"},
+           "top": "Most cited papers", "per_year": "Citations per year", "source": "OpenAlex", "as_of": "as of",
+           "cited": "cited", "so_far": "so far"},
     "zh": {"citations": "总被引", "h_index": "h 指数", "i10_index": "i10 指数", "works": "论文数", "mean2": "近两年篇均被引",
-           "top": "高被引论文", "per_year": "逐年被引", "source": "OpenAlex", "as_of": "数据日期", "cited": "被引"},
+           "top": "高被引论文", "per_year": "逐年被引", "source": "OpenAlex", "as_of": "数据日期", "cited": "被引", "so_far": "截至目前"},
 }  # fmt: skip
 
 
@@ -137,6 +138,8 @@ def citations_card(s: Scholar, theme: str = "auto", lang: str = "en", years: int
     top, height_bars, left, right = 62, 110, 25, WIDTH - 25
     body = []
     if data:
+        # the year of the snapshot is not over: its bar is faded and marked, not read as a drop
+        current = int(s.retrieved[:4]) if s.retrieved[:4].isdigit() else None
         peak = max(c for _, _, c in data) or 1
         step = (right - left) / len(data)
         bar = max(4.0, step * 0.62)
@@ -144,10 +147,12 @@ def citations_card(s: Scholar, theme: str = "auto", lang: str = "en", years: int
             h = 0 if cites == 0 else max(1.5, height_bars * cites / peak)
             x = left + i * step + (step - bar) / 2
             body.append(
-                f'<rect class="bar" x="{x:.1f}" y="{top + height_bars - h:.1f}" width="{bar:.1f}" height="{h:.1f}" rx="2">'
-                f"<title>{year}: {cites}</title></rect>"
+                f'<rect class="bar" x="{x:.1f}" y="{top + height_bars - h:.1f}" width="{bar:.1f}" height="{h:.1f}" rx="2"'
+                + (' opacity="0.45"' if year == current else "")
+                + f"><title>{year}: {cites}{' (' + words['so_far'] + ')' if year == current else ''}</title></rect>"
             )
-            body.append(f'<text class="muted" x="{x + bar / 2:.1f}" y="{top + height_bars + 16}" text-anchor="middle">{year % 100:02d}</text>')
+            label = f"{year % 100:02d}" + ("*" if year == current else "")
+            body.append(f'<text class="muted" x="{x + bar / 2:.1f}" y="{top + height_bars + 16}" text-anchor="middle">{label}</text>')
             if cites == peak:
                 body.append(
                     f'<text class="muted" x="{x + bar / 2:.1f}" y="{top + height_bars - h - 5:.1f}" text-anchor="middle">'
@@ -155,7 +160,8 @@ def citations_card(s: Scholar, theme: str = "auto", lang: str = "en", years: int
                 )
     else:
         body.append(f'<text class="muted" x="25" y="{top + 14}">–</text>')
-    return _frame(math.ceil(top + height_bars + 58), theme, f"{words['per_year']} · {s.name}", body, _footer(s, lang))
+    footer = _footer(s, lang) + (f" · *{words['so_far']}" if data and current == data[-1][0] else "")
+    return _frame(math.ceil(top + height_bars + 58), theme, f"{words['per_year']} · {s.name}", body, footer)
 
 
 CARDS = {"stats": stats_card, "works": works_card, "citations": citations_card}

@@ -35,5 +35,12 @@
 
 Tests: 29 (a fake transport; none reaches the network). ruff, mypy clean.
 
-Next: the partial current year; the GitHub Action; README (English, Chinese) with demo images from a synthetic
+### 2026-11-13 — the partial year
+
+- The snapshot's own year is not over, so its bar read as a drop: it is faded, its label starred, its tooltip and the
+  footer say "so far".
+
+Tests: 30.
+
+Next: the GitHub Action; README (English, Chinese) with demo images from a synthetic
 profile; Skill; CI; the public repository.

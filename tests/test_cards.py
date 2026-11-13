@@ -101,6 +101,14 @@ def test_what_the_cards_say() -> None:
     assert "总被引" in stats_card(s, lang="zh")
 
 
+def test_the_current_year_is_marked_partial() -> None:
+    s = scholar()
+    s.retrieved = "2025-03-01"  # the snapshot's year is the last bar's
+    bars = citations_card(s)
+    assert bars.count('opacity="0.45"') == 1 and "2025: 1100 (so far)" in bars and ">25*<" in bars and "*so far" in bars
+    assert 'opacity="0.45"' not in citations_card(scholar())  # retrieved 2026: 2025 is a whole year
+
+
 def test_each_card_scopes_its_css() -> None:
     import re
 
