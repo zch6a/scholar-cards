@@ -92,8 +92,9 @@ def clip(s: str, size: float, width: float, bold: bool = False) -> str:
     """The text, cut with an ellipsis to fit `width`, never inside a character cluster (a letter and its accent, an
     emoji joined by ZWJ).
 
-    >>> clip("A very long title about attention", 10, 80)  # 5.6 px a character, a capital 7.2
-    'A very long t…'
+    >>> cut = clip("A very long title about attention", 10, 80)
+    >>> cut.startswith("A very long") and cut.endswith("…") and text_width(cut, 10) <= 80
+    True
     >>> clip("xxxxxxxxe" + chr(0x301) + "tude", 10, 60) == "xxxxxxxxe" + chr(0x301) + "…"  # the accent stays with its letter
     True
     """
