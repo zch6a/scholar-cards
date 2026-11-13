@@ -31,6 +31,9 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["src/scholar_cards"]
 
+[tool.hatch.build.targets.sdist]
+exclude = ["docs/"]  # images for the GitHub page only
+
 [dependency-groups]
 dev = ["pytest>=8", "ruff>=0.6", "mypy>=1.10"]
 

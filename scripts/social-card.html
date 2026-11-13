@@ -1,0 +1,35 @@
+<!doctype html>
+<!-- The repository's social preview (1280×640): docs/social-preview.png, rendered from this page with headless Chrome
+     (chrome --headless --screenshot --window-size=1280,640). The cards are the made-up example's, as the tool draws them. -->
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  html, body { margin: 0; width: 1280px; height: 640px; overflow: hidden; }
+  body { background: radial-gradient(1100px 700px at 12% 8%, #13233d 0%, #12141a 55%, #0b0d11 100%); color: #e6edf3;
+    font-family: "Segoe UI", -apple-system, system-ui, sans-serif; display: grid; grid-template-columns: 430px 1fr; gap: 36px;
+    padding: 0 48px 0 70px; box-sizing: border-box; align-items: center; }
+  h1 { font-size: 60px; margin: 0 0 16px; letter-spacing: -1.5px; }
+  h1 span { color: #58a6ff; }
+  .tag { font-size: 31px; line-height: 1.22; margin: 0 0 22px; font-weight: 600; }
+  .sub { font-size: 18.5px; line-height: 1.5; color: #b1bac4; margin: 0 0 26px; }
+  .pills { display: flex; gap: 9px; flex-wrap: wrap; }
+  .pills span { font-size: 14.5px; border: 1px solid #30363d; background: #161b22; border-radius: 999px; padding: 6px 12px; color: #c9d1d9; }
+  .cards { display: grid; gap: 14px; justify-items: start; }
+  .cards img { width: 495px; filter: drop-shadow(0 18px 40px rgba(0,0,0,.5)); border-radius: 6px; }
+  .cards img:nth-child(2) { margin-left: 150px; margin-top: -60px; }
+</style>
+</head>
+<body>
+  <div>
+    <h1>scholar-<span>cards</span></h1>
+    <p class="tag">Your citations on your homepage, always current.</p>
+    <p class="sub">Citations, h-index and most cited papers from OpenAlex, as SVG cards for al-folio, academicpages or a GitHub profile, refreshed by a weekly workflow.</p>
+    <div class="pills"><span>OpenAlex</span><span>Light · dark · auto</span><span>GitHub Action</span><span>No API key</span></div>
+  </div>
+  <div class="cards">
+    <img src="../docs/dark/stats.svg" alt="">
+    <img src="../docs/dark/citations.svg" alt="">
+  </div>
+</body>
+</html>

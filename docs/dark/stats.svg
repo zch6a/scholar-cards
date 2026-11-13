@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="495" height="238" viewBox="0 0 495 238" role="img" id="sc-fa65c6e6d3" aria-label="Dr. Ada Example">
+<title>Dr. Ada Example</title>
+<style>#sc-fa65c6e6d3 text{font-family:-apple-system, 'Segoe UI', Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif}#sc-fa65c6e6d3 .title{font-size:18px;font-weight:600}#sc-fa65c6e6d3 .text{font-size:14px}#sc-fa65c6e6d3 .muted{font-size:11px}#sc-fa65c6e6d3 .bg{fill:#0d1117;stroke:#30363d}#sc-fa65c6e6d3 .title{fill:#58a6ff}#sc-fa65c6e6d3 .text{fill:#c9d1d9}#sc-fa65c6e6d3 .muted{fill:#8b949e}#sc-fa65c6e6d3 .bar{fill:#58a6ff}</style>
+<rect class="bg" x="0.5" y="0.5" rx="4.5" width="494" height="237"/>
+<text class="title" x="25" y="35">Dr. Ada Example</text>
+<text class="muted" x="25" y="54">Example Institute of Technology</text>
+<text class="text" x="25" y="88">Citations</text>
+<text class="text" x="470" y="88" text-anchor="end" font-weight="600">6,088</text>
+<text class="text" x="25" y="114">h-index</text>
+<text class="text" x="470" y="114" text-anchor="end" font-weight="600">27</text>
+<text class="text" x="25" y="140">i10-index</text>
+<text class="text" x="470" y="140" text-anchor="end" font-weight="600">48</text>
+<text class="text" x="25" y="166">Works</text>
+<text class="text" x="470" y="166" text-anchor="end" font-weight="600">99</text>
+<text class="text" x="25" y="192">2-year mean citedness</text>
+<text class="text" x="470" y="192" text-anchor="end" font-weight="600">6.40</text>
+<text class="muted" x="25" y="224">OpenAlex · as of 2026-11-13</text>
+</svg>

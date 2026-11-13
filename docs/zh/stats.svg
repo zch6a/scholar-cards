@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="495" height="238" viewBox="0 0 495 238" role="img" id="sc-87521e3768" aria-label="Dr. Ada Example">
+<title>Dr. Ada Example</title>
+<style>#sc-87521e3768 text{font-family:-apple-system, 'Segoe UI', Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif}#sc-87521e3768 .title{font-size:18px;font-weight:600}#sc-87521e3768 .text{font-size:14px}#sc-87521e3768 .muted{font-size:11px}#sc-87521e3768 .bg{fill:#ffffff;stroke:#e4e2e2}#sc-87521e3768 .title{fill:#2f80ed}#sc-87521e3768 .text{fill:#434d58}#sc-87521e3768 .muted{fill:#6a737d}#sc-87521e3768 .bar{fill:#2f80ed}@media (prefers-color-scheme: dark){#sc-87521e3768 .bg{fill:#0d1117;stroke:#30363d}#sc-87521e3768 .title{fill:#58a6ff}#sc-87521e3768 .text{fill:#c9d1d9}#sc-87521e3768 .muted{fill:#8b949e}#sc-87521e3768 .bar{fill:#58a6ff}}</style>
+<rect class="bg" x="0.5" y="0.5" rx="4.5" width="494" height="237"/>
+<text class="title" x="25" y="35">Dr. Ada Example</text>
+<text class="muted" x="25" y="54">Example Institute of Technology</text>
+<text class="text" x="25" y="88">总被引</text>
+<text class="text" x="470" y="88" text-anchor="end" font-weight="600">6,088</text>
+<text class="text" x="25" y="114">h 指数</text>
+<text class="text" x="470" y="114" text-anchor="end" font-weight="600">27</text>
+<text class="text" x="25" y="140">i10 指数</text>
+<text class="text" x="470" y="140" text-anchor="end" font-weight="600">48</text>
+<text class="text" x="25" y="166">论文数</text>
+<text class="text" x="470" y="166" text-anchor="end" font-weight="600">99</text>
+<text class="text" x="25" y="192">近两年篇均被引</text>
+<text class="text" x="470" y="192" text-anchor="end" font-weight="600">6.40</text>
+<text class="muted" x="25" y="224">OpenAlex · 数据日期 2026-11-13</text>
+</svg>

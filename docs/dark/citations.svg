@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="495" height="230" viewBox="0 0 495 230" role="img" id="sc-dbd5baa4f7" aria-label="Citations per year · Dr. Ada Example">
+<title>Citations per year · Dr. Ada Example</title>
+<style>#sc-dbd5baa4f7 text{font-family:-apple-system, 'Segoe UI', Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif}#sc-dbd5baa4f7 .title{font-size:18px;font-weight:600}#sc-dbd5baa4f7 .text{font-size:14px}#sc-dbd5baa4f7 .muted{font-size:11px}#sc-dbd5baa4f7 .bg{fill:#0d1117;stroke:#30363d}#sc-dbd5baa4f7 .title{fill:#58a6ff}#sc-dbd5baa4f7 .text{fill:#c9d1d9}#sc-dbd5baa4f7 .muted{fill:#8b949e}#sc-dbd5baa4f7 .bar{fill:#58a6ff}</style>
+<rect class="bg" x="0.5" y="0.5" rx="4.5" width="494" height="229"/>
+<text class="title" x="25" y="35">Citations per year · Dr. Ada Example</text>
+<rect class="bar" x="33.5" y="164.2" width="27.6" height="7.8" rx="2"><title>2017: 98</title></rect>
+<text class="muted" x="47.2" y="188" text-anchor="middle">17</text>
+<rect class="bar" x="78.0" y="159.3" width="27.6" height="12.7" rx="2"><title>2018: 160</title></rect>
+<text class="muted" x="91.8" y="188" text-anchor="middle">18</text>
+<rect class="bar" x="122.5" y="156.6" width="27.6" height="15.4" rx="2"><title>2019: 194</title></rect>
+<text class="muted" x="136.2" y="188" text-anchor="middle">19</text>
+<rect class="bar" x="167.0" y="150.8" width="27.6" height="21.2" rx="2"><title>2020: 267</title></rect>
+<text class="muted" x="180.8" y="188" text-anchor="middle">20</text>
+<rect class="bar" x="211.5" y="142.8" width="27.6" height="29.2" rx="2"><title>2021: 368</title></rect>
+<text class="muted" x="225.2" y="188" text-anchor="middle">21</text>
+<rect class="bar" x="256.0" y="131.2" width="27.6" height="40.8" rx="2"><title>2022: 513</title></rect>
+<text class="muted" x="269.8" y="188" text-anchor="middle">22</text>
+<rect class="bar" x="300.5" y="114.9" width="27.6" height="57.1" rx="2"><title>2023: 719</title></rect>
+<text class="muted" x="314.2" y="188" text-anchor="middle">23</text>
+<rect class="bar" x="345.0" y="91.6" width="27.6" height="80.4" rx="2"><title>2024: 1012</title></rect>
+<text class="muted" x="358.8" y="188" text-anchor="middle">24</text>
+<rect class="bar" x="389.5" y="62.0" width="27.6" height="110.0" rx="2"><title>2025: 1384</title></rect>
+<text class="muted" x="403.2" y="188" text-anchor="middle">25</text>
+<text class="muted" x="403.2" y="57.0" text-anchor="middle">1,384</text>
+<rect class="bar" x="434.0" y="77.4" width="27.6" height="94.6" rx="2" opacity="0.45"><title>2026: 1190 (so far)</title></rect>
+<text class="muted" x="447.8" y="188" text-anchor="middle">26*</text>
+<text class="muted" x="25" y="216">OpenAlex · as of 2026-11-13 · *so far</text>
+</svg>

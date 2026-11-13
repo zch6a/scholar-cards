@@ -60,3 +60,16 @@ Tests: 31.
 
 Next: README (English, Chinese) with the workflow recipe and demo images; Skill; SECURITY, CONTRIBUTING, CHANGELOG;
 social card; the public repository.
+
+### 2026-11-13 — the docs
+
+- README (English, Chinese): what it is for, the example's cards (auto theme, so they follow GitHub's), `search` first
+  (OpenAlex splits some people; the tool never picks), the options, the two-job workflow recipe (read-only render,
+  git-only commit), what each number is and how it differs from Google Scholar's, limits.
+- Skill (find the record with the user, never silently), SECURITY (only api.openalex.org; the key only in a header;
+  inert SVG), CONTRIBUTING (module map), CHANGELOG; the social card from the example's dark cards.
+- Found while writing them: rendering one theme writes plain names (`stats.svg`), so a dark run over the docs folder
+  replaced the auto cards; the dark ones now go to `docs/dark/`. The sdist leaves out `docs/`.
+
+Next: the public repository and CI; then the five rounds (reviews, real profiles, the workflow recipe run for real
+in a test repository).
