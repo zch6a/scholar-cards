@@ -1,0 +1,126 @@
+{
+  "tool": "scholar-cards",
+  "snapshot": 1,
+  "id": "https://openalex.org/A0000000000",
+  "name": "Dr. Ada Example",
+  "works_count": 99,
+  "cited_by_count": 6088,
+  "h_index": 27,
+  "i10_index": 48,
+  "mean_citedness_2yr": 6.4,
+  "orcid": "",
+  "institution": "Example Institute of Technology",
+  "counts_by_year": [
+    [
+      2014,
+      3,
+      45
+    ],
+    [
+      2015,
+      4,
+      55
+    ],
+    [
+      2016,
+      6,
+      83
+    ],
+    [
+      2017,
+      5,
+      98
+    ],
+    [
+      2018,
+      8,
+      160
+    ],
+    [
+      2019,
+      7,
+      194
+    ],
+    [
+      2020,
+      9,
+      267
+    ],
+    [
+      2021,
+      11,
+      368
+    ],
+    [
+      2022,
+      8,
+      513
+    ],
+    [
+      2023,
+      10,
+      719
+    ],
+    [
+      2024,
+      12,
+      1012
+    ],
+    [
+      2025,
+      9,
+      1384
+    ],
+    [
+      2026,
+      7,
+      1190
+    ]
+  ],
+  "top_works": [
+    {
+      "title": "Sparse attention for long documents",
+      "year": 2019,
+      "venue": "Advances in Neural Information Processing Systems",
+      "cited_by_count": 2140,
+      "id": "",
+      "doi": ""
+    },
+    {
+      "title": "A benchmark for robust tabular learning",
+      "year": 2021,
+      "venue": "International Conference on Learning Representations",
+      "cited_by_count": 1315,
+      "id": "",
+      "doi": ""
+    },
+    {
+      "title": "Calibrated uncertainty under distribution shift",
+      "year": 2018,
+      "venue": "International Conference on Machine Learning",
+      "cited_by_count": 978,
+      "id": "",
+      "doi": ""
+    },
+    {
+      "title": "Small models, careful data: a study of curation",
+      "year": 2023,
+      "venue": "Transactions on Machine Learning Research",
+      "cited_by_count": 512,
+      "id": "",
+      "doi": ""
+    },
+    {
+      "title": "Seeds, variance, and what tables should say",
+      "year": 2024,
+      "venue": "Journal of Machine Learning Research",
+      "cited_by_count": 238,
+      "id": "",
+      "doi": ""
+    }
+  ],
+  "retrieved": "2026-11-13",
+  "sources": [
+    "(made up: scripts/make_example.py)"
+  ]
+}

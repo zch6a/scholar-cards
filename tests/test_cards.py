@@ -119,6 +119,12 @@ def test_each_card_scopes_its_css() -> None:
     assert all(rule.startswith(f"#{ids[1]} ") for rule in re.split(r"(?<=\})", style) if rule)
 
 
+def test_the_example_snapshot_renders() -> None:
+    s = Scholar.load(Path(__file__).resolve().parent.parent / "examples" / "scholar.json")
+    assert s.name == "Dr. Ada Example" and s.retrieved == "2026-11-13" and len(s.top_works) == 5
+    assert all(ET.fromstring(card(s, "auto", "en")) is not None for card in CARDS.values())
+
+
 def test_cli_from_a_snapshot(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     snap = tmp_path / "scholar.json"
     snap.write_text(scholar().to_json(), encoding="utf-8")

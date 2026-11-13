@@ -1,0 +1,63 @@
+name: scholar-cards
+description: A researcher's citations, h-index and most cited papers, from OpenAlex, as SVG cards. Fetches and renders into a folder; committing the cards is left to a separate job (see the README).
+author: zch6a
+branding:
+  icon: award
+  color: blue
+inputs:
+  author:
+    description: An OpenAlex author ID (A…) or an ORCID (find the ID with `scholar-cards search "Your Name"`)
+    default: ""
+  snapshot:
+    description: Render from this scholar.json instead of fetching (no network)
+    default: ""
+  out:
+    description: The folder for the cards and scholar.json
+    default: cards
+  cards:
+    description: "Which cards: stats, works, citations"
+    default: stats,works,citations
+  theme:
+    description: "auto (follows the reader), light, dark, or several: light,dark"
+    default: auto
+  lang:
+    description: "Labels: en or zh"
+    default: en
+  top:
+    description: How many papers on the works card
+    default: "5"
+  api-key:
+    description: An OpenAlex API key (optional; a profile needs two requests, which the keyless budget covers). Pass it from a secret.
+    default: ""
+runs:
+  using: composite
+  steps:
+    # The tool at this action's own ref; nothing from the repository is run.
+    - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3; it has no moving major tag
+    - shell: bash
+      env:
+        AUTHOR: ${{ inputs.author }}
+        SNAPSHOT: ${{ inputs.snapshot }}
+        OUT: ${{ inputs.out }}
+        CARDS: ${{ inputs.cards }}
+        THEME: ${{ inputs.theme }}
+        LANG_: ${{ inputs.lang }}
+        TOP: ${{ inputs.top }}
+        OPENALEX_API_KEY: ${{ inputs.api-key }}
+        ACTION_PATH: ${{ github.action_path }}
+      run: |
+        args=(-o "$OUT" --cards "$CARDS" --theme "$THEME" --lang "$LANG_" --top "$TOP")
+        if [ -n "$SNAPSHOT" ]; then
+          args+=(--snapshot "$SNAPSHOT")
+        elif [ -n "$AUTHOR" ]; then
+          args=("$AUTHOR" "${args[@]}")
+        else
+          echo "::error::give the action an author (an OpenAlex ID or an ORCID) or a snapshot"
+          exit 2
+        fi
+        uvx -q --from "$ACTION_PATH" scholar-cards "${args[@]}"
+        {
+          echo "### scholar-cards"
+          echo
+          for f in "$OUT"/*.svg; do echo "- \`$f\`"; done
+        } >> "$GITHUB_STEP_SUMMARY"

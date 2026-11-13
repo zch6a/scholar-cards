@@ -44,3 +44,19 @@ Tests: 30.
 
 Next: the GitHub Action; README (English, Chinese) with demo images from a synthetic
 profile; Skill; CI; the public repository.
+
+### 2026-11-13 — the Action, CI, release
+
+- `action.yml` (composite): an author or a snapshot in, the cards and scholar.json written to a folder; the key, if any,
+  from an input meant for a secret, into the environment (a header, never a URL); the tool runs at the action's own
+  ref. It commits nothing: the README's recipe will do that in a second job that runs no project code. Tried locally
+  through Git Bash: with the example's snapshot it writes the six cards (light, dark); with neither input it stops
+  with exit 2 and says why.
+- `examples/scholar.json`: a made-up researcher (`scripts/make_example.py`, seeded), for CI, the README's images and
+  tries without the network.
+- CI: three systems × Python 3.10/3.13, and the action on the example. Release workflow as exp-tables' (the fixed one).
+
+Tests: 31.
+
+Next: README (English, Chinese) with the workflow recipe and demo images; Skill; SECURITY, CONTRIBUTING, CHANGELOG;
+social card; the public repository.
