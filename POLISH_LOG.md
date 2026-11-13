@@ -225,3 +225,13 @@ Round 4's CI was green on every job.
 Tests: 83 (were 78), Python 3.10 and 3.13; ruff, mypy clean.
 
 Next: v0.1.0.
+
+### 2026-11-13 — v0.1.0
+
+Round 5's CI was green on every job. Tagged `v0.1.0` (annotated) on 697fef0 and pushed; the release workflow's build
+job (tests, build, read-only) and publish job (gh only) passed: the GitHub release "scholar-cards 0.1.0" has the
+CHANGELOG section, the wheel and the source archive, and `v0` points at it, so the README's recipe
+(`zch6a/scholar-cards@v0`) works as written from now on. Not published to PyPI (the user's decision).
+
+Five rounds: real OpenAlex records of every shape, the recipe run in CI, three independent reviews (28 defects),
+29 tests at the first commit, 83 at the release.
