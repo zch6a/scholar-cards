@@ -144,6 +144,12 @@ say "OpenAlex" and the date; `scholar.json` lists the exact API URLs.
 [arxiv-diff](https://github.com/zch6a/arxiv-diff) shows what changed between versions;
 [exp-tables](https://github.com/zch6a/exp-tables) turns results into tables with honest bold.
 
+## Part of research-kit
+
+One of thirteen open research tools, from reading papers to after publication. All of them, in the order of
+the work, with one Claude Code plugin marketplace for their skills: [research-kit](https://github.com/zch6a/research-kit)
+· [site](https://zch6a.github.io/research-kit/).
+
 ## License
 
 MIT
