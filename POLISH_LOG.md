@@ -73,3 +73,11 @@ social card; the public repository.
 
 Next: the public repository and CI; then the five rounds (reviews, real profiles, the workflow recipe run for real
 in a test repository).
+
+### 2026-11-13 — public
+
+- Checked first: commits by zch6a with the noreply address, no attribution lines, no personal paths or names.
+- https://github.com/zch6a/scholar-cards (public, main), description and topics. The first CI run is green: three
+  systems × Python 3.10/3.13, and the action job on the example's snapshot.
+
+Next: polishing round 1.
