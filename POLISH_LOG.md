@@ -209,3 +209,19 @@ Round 3's CI was green on every job (the recipe jobs too).
 Tests: 78. Python 3.10 and 3.13; ruff, mypy clean.
 
 Next: round 5, then v0.1.0.
+
+### 2026-11-13 — polishing round 5
+
+Round 4's CI was green on every job.
+
+- **Everything once more** (`tests/test_release.py`): every card in every theme (auto, light, dark) and both languages
+  from the example through the command line, each a valid SVG with its language; a (fake) fetch writes the snapshot
+  and the cards, and rendering again from that snapshot gives the same cards byte for byte; the key never in a source.
+- **The README's images had gone stale**: round 3 made each card's id depend on its description too, and the cards in
+  `docs/` were not drawn again. Redrawn, and a test now checks the README's example numbers against the example and
+  that the images are the example's.
+- CHANGELOG written for the release as the tool now is.
+
+Tests: 83 (were 78), Python 3.10 and 3.13; ruff, mypy clean.
+
+Next: v0.1.0.
