@@ -2,7 +2,7 @@
 
 scholar-cards A5023888391 -o cards/                 fetch from OpenAlex, save scholar.json, write the cards
 scholar-cards 0000-0002-1825-009X -o cards/         the same by ORCID
-scholar-cards search "Ada Lovelace"                 find the author record (OpenAlex IDs, institutions, counts)
+scholar-cards search "Ada Lovelace"                 find the author record (OpenAlex IDs, ORCIDs, institutions, counts)
 scholar-cards --snapshot cards/scholar.json -o cards/   render again from a snapshot, without the network
 
 Set OPENALEX_API_KEY for a higher daily budget (it is sent as a header; never needed for one profile).
@@ -63,7 +63,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("name", nargs="?", help=argparse.SUPPRESS)
     ap.add_argument("-o", "--out", type=Path, default=Path("."), help="the folder for the cards and scholar.json (default: here)")
     ap.add_argument("--cards", default="stats,works,citations", help="which cards: stats, works, citations (default: all)")
-    ap.add_argument("--theme", default="auto", help="auto (follows the reader), light, dark, or several: light,dark (default auto)")
+    ap.add_argument("--theme", default="auto", help="auto (follows the reader's system setting), light, dark, or both: light,dark (default auto)")
     ap.add_argument("--lang", choices=["en", "zh"], default="en", help="the cards' labels (default en)")
     ap.add_argument("--top", type=int, default=5, help="how many papers on the works card (default 5)")
     ap.add_argument("--snapshot", type=Path, help="render from this scholar.json instead of fetching")
