@@ -76,7 +76,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
-concurrency: scholar-cards             # one run at a time: a manual run cannot race the weekly one
+concurrency: scholar-cards             # 同一时间只跑一个：手动运行不会和每周的那次冲突
 jobs:
   cards:                               # 用只读权限取数并生成卡片
     runs-on: ubuntu-latest
@@ -94,7 +94,7 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
-      - run: rm -rf cards                # cards no longer made (a theme dropped) go too
+      - run: rm -rf cards                # 不再生成的卡片（比如去掉了某个主题）也一并删掉
       - uses: actions/download-artifact@v4
         with: { name: cards, path: cards/ }
       - run: |
@@ -105,7 +105,7 @@ jobs:
 ```
 
 能写你仓库的那个任务不运行本工具的任何代码；运行本工具的任务没有写权限。改了 `out` 的话，提交任务里的 `cards/` 路径也要一起改。每次运行通常都会产生一次提交：卡片上的日期会变。如果你的仓库要求，把 action 固定到具体提交。
-用 al-folio 或 academicpages 时，把 `out` 指向网站会发布的目录（例如 `assets/img/`），把卡片当图片用。al-folio 自带的暗色开关不会改变读者的系统设置，所以在那里用与网站一致的 `--theme light` 或 `dark` 比 `auto` 更合适。
+用 al-folio 或 academicpages 时，把 `out` 指向网站会发布的一个专用目录（例如 `assets/img/scholar-cards/`，不要用 `assets/img/` 本身：提交任务每次运行都会清空这个目录），把卡片当图片用。工作流推送的提交不会触发其他工作流，所以靠推送部署的网站（al-folio 就是）要等下次部署才会发布新卡片；想立刻部署，在提交任务里加上 `gh workflow run <你的部署工作流>`，并给它 `actions: write` 权限。al-folio 自带的暗色开关不会改变读者的系统设置，所以在那里用与网站一致的 `theme: light` 或 `dark` 比 `auto` 更合适。
 
 ## 这些数字是什么
 

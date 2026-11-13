@@ -103,9 +103,29 @@ def clip(s: str, size: float, width: float, bold: bool = False) -> str:
     n = 0
     while n < len(s) and text_width(s[: n + 1] + "…", size, bold) <= width:
         n += 1
-    while 0 < n < len(s) and (unicodedata.combining(s[n]) or s[n] in "\u200d\ufe0f" or s[n - 1] == "\u200d"):
+    while 0 < n < len(s) and _joins(s, n):
         n -= 1  # back out of a cluster
     return s[:n].rstrip() + "…"
+
+
+def _regional(c: str) -> bool:
+    return "\U0001f1e6" <= c <= "\U0001f1ff"
+
+
+def _joins(s: str, n: int) -> bool:
+    """Whether s[n] belongs to the cluster before it: a mark (Mn, Mc, Me: an accent, a Devanagari or Thai vowel sign,
+    a keycap), ZWJ or what follows it, a variation selector, a skin tone, or the second half of a flag."""
+    c, before = s[n], s[n - 1]
+    if unicodedata.category(c) in ("Mn", "Mc", "Me") or c in "\u200d\ufe0e\ufe0f" or before == "\u200d":
+        return True
+    if "\U0001f3fb" <= c <= "\U0001f3ff":
+        return True
+    if _regional(c) and _regional(before):
+        run = 0  # an odd run of regional indicators before c: c completes a flag
+        while n - 1 - run >= 0 and _regional(s[n - 1 - run]):
+            run += 1
+        return run % 2 == 1
+    return False
 
 
 def iso(s: str) -> str:
@@ -133,7 +153,7 @@ def _style(theme: str, scope: str) -> str:
 def _frame(height: int, theme: str, title: str, body: list[str], footer: str, desc: str = "", lang: str = "en") -> str:
     """The card around its body: the title shown and read out, a description with every number (screen readers get
     the values, not only the title), the language, the CSS under the card's own id."""
-    scope = "sc-" + hashlib.sha1("\n".join([theme, title, footer, *body]).encode()).hexdigest()[:10]
+    scope = "sc-" + hashlib.sha1(clean("\n".join([theme, lang, title, desc, footer, *body])).encode()).hexdigest()[:10]
     return "\n".join([
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{WIDTH}" height="{height}" viewBox="0 0 {WIDTH} {height}" '
         f'role="img" id="{scope}" xml:lang="{lang}" aria-labelledby="{scope}-t {scope}-d">',

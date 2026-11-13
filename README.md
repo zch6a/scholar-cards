@@ -110,9 +110,12 @@ jobs:
 
 The job that can write to your repository runs no code of this tool; the one that runs it cannot write. If you change
 `out`, change the `cards/` paths in the commit job to match. Expect a commit each run: the date on the cards changes. Pin the
-actions to commits if your repository's policy asks for it. For al-folio or academicpages, point `out` at a folder
-the site serves (`assets/img/` for example) and use the cards as images. al-folio's own dark-mode switch does not change the
-reader's system setting, so there `--theme light` or `dark` (matching the site) reads better than `auto`.
+actions to commits if your repository's policy asks for it. For al-folio or academicpages, point `out` at a folder of
+its own that the site serves (`assets/img/scholar-cards/`, never `assets/img/` itself: the commit job empties that
+folder each run) and use the cards as images. A push made by a workflow does not start other workflows, so a site
+that deploys on push (al-folio does) publishes the new cards at its next deploy; to deploy at once, add
+`gh workflow run <your deploy workflow>` to the commit job, with `actions: write` in its permissions. al-folio's own dark-mode switch does not change the
+reader's system setting, so there `theme: light` or `dark` (matching the site) reads better than `auto`.
 
 ## What the numbers are
 

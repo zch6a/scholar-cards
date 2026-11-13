@@ -157,3 +157,36 @@ Next: round 3.
 A slip in round 2: its commit went out with clip's doctest failing on Python 3.10 (an exact cut right on the width
 boundary rounds differently there; CI caught it). The doctest now checks what a cut must be, CI is green again, and
 the commit gate runs the 3.10 tests too.
+
+### 2026-11-13 — polishing round 3
+
+**The README's recipe, run for real** (in this repository's CI rather than a test repository under the user's
+account): a job renders the example with the action and uploads the cards; a second job starts from a checkout with
+a stale card from "an earlier run", clears the folder, downloads, `git add -A`, commits, and checks that the stale
+card was deleted and the three cards added. Green on GitHub, first try.
+
+**Third independent review** (the round-2 changes, the README, the Skill; 7 confirmed, all fixed, tests in
+`tests/test_review_round3.py`):
+
+1. **The recipe would delete a site's images.** The README said to point `out` at a folder the site serves,
+   "`assets/img/` for example", and the commit job empties `out` each run. Now: a folder of its own
+   (`assets/img/scholar-cards/`), with the warning; and a note that a workflow's push does not start the site's
+   deploy (al-folio deploys on push), with the line that does.
+2. **Cutting still split clusters**: Devanagari and Thai vowel signs (marks of class 0), skin tones, flags (pairs of
+   regional indicators), keycaps. A cut now backs out of any mark (Mn, Mc, Me), skin tone, ZWJ sequence, variation
+   selector or half flag.
+3. **Impossible numbers in a snapshot**: a count of 10^400 crashed the rendering, a NaN or infinite mean printed
+   "nan", a snapshot nested 100,000 deep crashed. Counts are bounded (10^12), the mean finite; all exit 2.
+4. A record with a negative year wrote a snapshot that did not load back: such years are dropped; null optional text
+   loads as empty; `sources` must be a list.
+5. A malformed API record (`summary_stats` a list, an institution that is a string, a work that is not an object, a
+   `primary_location` string, a NaN count) crashed: read defensively.
+6. The READMEs said `--theme light` where the workflow takes `theme: light`; the Chinese recipe's comments were in
+   English.
+7. The Skill's search line lacked the ORCID it tells the agent to pick by.
+
+Also: each card's id is computed from everything it shows and says (language and description too).
+
+Tests: 77 (were 65), Python 3.10 and 3.13; ruff, mypy clean.
+
+Next: round 4.

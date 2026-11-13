@@ -4,6 +4,7 @@ snapshot format (JSON) so that cards can be rendered again without the network."
 from __future__ import annotations
 
 import json
+import math
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
@@ -49,27 +50,27 @@ class Scholar:
         >>> s.name, s.h_index, s.counts_by_year
         ('Ada', 2, [(2024, 2, 4), (2025, 1, 6)])
         """
-        stats = author.get("summary_stats") or {}
-        institutions = author.get("last_known_institutions") or []
-        if not institutions and author.get("last_known_institution"):
+        stats = _dict(author.get("summary_stats"))
+        institutions = [i for i in _list(author.get("last_known_institutions")) if isinstance(i, dict)]
+        if not institutions and isinstance(author.get("last_known_institution"), dict):
             institutions = [author["last_known_institution"]]
         years = sorted(
-            (int(c["year"]), max(0, int(c.get("works_count") or 0)), max(0, int(c.get("cited_by_count") or 0)))
-            for c in author.get("counts_by_year") or []
-            if isinstance(c, dict) and isinstance(c.get("year"), int)
+            (c["year"], _int(c.get("works_count")) or 0, _int(c.get("cited_by_count")) or 0)
+            for c in _list(author.get("counts_by_year"))
+            if isinstance(c, dict) and isinstance(c.get("year"), int) and not isinstance(c["year"], bool) and 0 < c["year"] < 10_000
         )
         return cls(
             id=str(author.get("id") or ""),
             name=str(author.get("display_name") or ""),
-            works_count=max(0, int(author.get("works_count") or 0)),
-            cited_by_count=max(0, int(author.get("cited_by_count") or 0)),
+            works_count=_int(author.get("works_count")) or 0,
+            cited_by_count=_int(author.get("cited_by_count")) or 0,
             h_index=_int(stats.get("h_index")),
             i10_index=_int(stats.get("i10_index")),
             mean_citedness_2yr=_float(stats.get("2yr_mean_citedness")),
             orcid=str(author.get("orcid") or ""),
-            institution=str((institutions[0] or {}).get("display_name") or "") if institutions else "",
+            institution=str(institutions[0].get("display_name") or "") if institutions else "",
             counts_by_year=years,
-            top_works=[_work(w) for w in works or []],
+            top_works=[_work(w) for w in works or [] if isinstance(w, dict)],
             retrieved=retrieved,
             sources=list(sources or []),
         )
@@ -80,7 +81,10 @@ class Scholar:
 
     @classmethod
     def from_json(cls, text: str) -> Scholar:
-        data = json.loads(text)
+        try:
+            data = json.loads(text)
+        except RecursionError as e:
+            raise ValueError("not a scholar-cards snapshot (nested too deep)") from e
         if not isinstance(data, dict) or data.get("tool") != "scholar-cards":
             raise ValueError("not a scholar-cards snapshot")
         version = data.get("snapshot", 0)
@@ -100,9 +104,9 @@ class Scholar:
                 counts_by_year=[_year(x) for x in data.get("counts_by_year") or []],
                 top_works=[_snapshot_work(w) for w in data.get("top_works") or []],
                 retrieved=_text(data, "retrieved", ""),
-                sources=[str(x) for x in data.get("sources") or []],
+                sources=[str(x) for x in _sources(data.get("sources"))],
             )
-        except (TypeError, ValueError, AttributeError, KeyError) as e:
+        except (TypeError, ValueError, AttributeError, KeyError, RecursionError) as e:
             raise ValueError(f"not a valid scholar-cards snapshot ({e})") from e
 
     @classmethod
@@ -112,14 +116,16 @@ class Scholar:
 
 def _text(data: dict[str, Any], key: str, default: str | None = None) -> str:
     v = data.get(key, default)
+    if v is None and default is not None:
+        v = default  # an optional text left null
     if not isinstance(v, str):
         raise TypeError(f"{key} must be text, not {v!r}")
     return v
 
 
 def _whole(v: object, what: str) -> int:
-    if isinstance(v, bool) or not isinstance(v, int) or v < 0:
-        raise TypeError(f"{what} must be a whole number of 0 or more, not {v!r}")
+    if isinstance(v, bool) or not isinstance(v, int) or not 0 <= v <= MAX_COUNT:
+        raise TypeError(f"{what} must be a whole number from 0 to {MAX_COUNT}, not {v!r}")
     return v
 
 
@@ -132,9 +138,17 @@ def _count(data: dict[str, Any], key: str, optional: bool = False) -> Any:
 def _mean(v: object) -> float | None:
     if v is None:
         return None
-    if isinstance(v, bool) or not isinstance(v, (int, float)) or v < 0:
+    if isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(v) or not 0 <= v <= MAX_COUNT:
         raise TypeError(f"mean_citedness_2yr must be a number of 0 or more, not {v!r}")
     return float(v)
+
+
+def _sources(v: object) -> list[Any]:
+    if v is None:
+        return []
+    if not isinstance(v, list):
+        raise TypeError(f"sources must be a list, not {v!r}")
+    return v
 
 
 def _year(x: Any) -> tuple[int, int, int]:
@@ -154,22 +168,38 @@ def _snapshot_work(w: dict[str, Any]) -> Work:
     )
 
 
+MAX_COUNT = 10**12  # more than any count could be; bigger is a broken record, not a number to print
+
+
 def _int(v: object) -> int | None:
-    return max(0, int(v)) if isinstance(v, (int, float)) and not isinstance(v, bool) else None
+    """A count from OpenAlex: a whole number from 0 to MAX_COUNT, else None."""
+    if isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(v):
+        return None
+    return min(MAX_COUNT, max(0, int(v)))
+
+
+def _dict(v: object) -> dict[str, Any]:
+    return v if isinstance(v, dict) else {}
+
+
+def _list(v: object) -> list[Any]:
+    return v if isinstance(v, list) else []
 
 
 def _float(v: object) -> float | None:
-    return max(0.0, float(v)) if isinstance(v, (int, float)) and not isinstance(v, bool) else None
+    if isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(v):
+        return None
+    return max(0.0, float(v))
 
 
 def _work(w: dict[str, Any]) -> Work:
-    location = w.get("primary_location") or {}
-    source = location.get("source") or {}
+    location = _dict(w.get("primary_location"))
+    source = _dict(location.get("source"))
     return Work(
         title=str(w.get("title") or w.get("display_name") or ""),
         year=_int(w.get("publication_year")),
         venue=str(source.get("display_name") or ""),
-        cited_by_count=max(0, int(w.get("cited_by_count") or 0)),
+        cited_by_count=_int(w.get("cited_by_count")) or 0,
         id=str(w.get("id") or ""),
         doi=str(w.get("doi") or ""),
     )

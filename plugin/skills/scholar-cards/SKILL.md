@@ -14,7 +14,7 @@ uvx --from git+https://github.com/zch6a/scholar-cards scholar-cards search "Full
 uvx --from git+https://github.com/zch6a/scholar-cards scholar-cards A5023888391 -o cards/  # or an ORCID
 ```
 
-- **Find the right record first.** `search` lists OpenAlex author records (ID, works, citations, institution).
+- **Find the right record first.** `search` lists OpenAlex author records (ID, ORCID, works, citations, institution).
   Several records can be the same person, and namesakes are common: show the user the candidates and let them
   choose (their ORCID settles it). Never pick one silently.
 - The second command writes `stats.svg`, `works.svg`, `citations.svg` and `scholar.json` (numbers, date, the API
