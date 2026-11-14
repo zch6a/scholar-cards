@@ -248,3 +248,24 @@ Released as 0.1.1 so that `v0`, which the marketplace installs from, carries the
 
 Both READMEs now end (before the licence) with a short section pointing to research-kit, the toolkit's front door: all
 thirteen tools in the order of the work, and one Claude Code plugin marketplace for their skills. Documentation only.
+
+### 2026-11-14 — 0.2.0: scholar-cards cited
+
+Two needs on research-kit's list meet here: "a free alert of who cited your paper and what they said about it" and
+"see why a paper is cited". Semantic Scholar's `/citations` endpoint gives the citing sentences ("contexts"); its
+`intents` field came back empty on every paper tried, so the labels are this tool's rules.
+
+Measured on Mamba (arXiv:2312.00752): 1,000 citing papers, 759 with contexts (1,473 sentences). A first sample of 40
+read by hand: 25 agree. Errors corrected: "rather than" read as a comparison, "follows", "as in", "we adopt" and "this
+paper adapts" missed, "compare" without a preposition missed, "although" and "lacks" missed as contrast, and "Gu et
+al. proposed ... surpassing Transformers" taken for the citing paper's claim to beat Mamba (the only one it had
+found). A fresh sample of 40 after the changes: 27 agree (builds on 6/10, contrasts with 1/4, compares with 1/1,
+mentions 19/25). The rules were not tuned on that second sample; the README gives both numbers and calls the labels
+hints. LoRA's run was refused with 429 throughout (the anonymous pool), which is why the retries exist and the
+README recommends a key.
+
+The client's sleep and getter are looked up when called: bound at definition, the tests' replacements did not apply
+and one test slept through the real waits (205 s).
+
+7 tests with a made-up Semantic Scholar (labels and claims to beat, new-only with a state file, markdown, JSON,
+retries, errors).

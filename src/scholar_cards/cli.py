@@ -4,6 +4,7 @@ scholar-cards A5023888391 -o cards/                 fetch from OpenAlex, save sc
 scholar-cards 0000-0002-1825-009X -o cards/         the same by ORCID
 scholar-cards search "Ada Lovelace"                 find the author record (OpenAlex IDs, ORCIDs, institutions, counts)
 scholar-cards --snapshot cards/scholar.json -o cards/   render again from a snapshot, without the network
+scholar-cards cited arXiv:1810.04805                who cites a paper and what they say (see: scholar-cards cited --help)
 
 Set OPENALEX_API_KEY for a higher daily budget (it is sent as a header; never needed for one profile).
 """
@@ -12,6 +13,7 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import re
 import sys
 from pathlib import Path
 
@@ -54,9 +56,50 @@ def _search(name: str, client: Client) -> int:
     return 0
 
 
+def cited_main(argv: list[str]) -> int:
+    from . import cited
+
+    ap = argparse.ArgumentParser(prog="scholar-cards cited", description=cited.__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("paper", help="an arXiv id, a DOI, or a Semantic Scholar paper id")
+    ap.add_argument("--new", action="store_true", help="only citing papers not seen at the last run (remembered in --state)")
+    ap.add_argument("--state", type=Path, help="where the citing papers already seen are kept (default: cited-<paper>.json here)")
+    ap.add_argument("--format", choices=["text", "markdown", "json"], default="text", help="text (default), markdown (an issue), json")
+    ap.add_argument("--contexts", type=int, default=2, help="citing sentences shown per paper in the text report (default 2)")
+    ap.add_argument("--limit", type=int, default=5000, help="at most this many citing papers (default 5000)")
+    ap.add_argument("--fail-on-new", action="store_true", help="exit with 1 when there is a new citing paper (to open an issue in CI)")
+    args = ap.parse_args(argv)
+    try:
+        pid = cited.paper_id(args.paper)
+        client = cited.Client()
+        info = client.paper(pid)
+        items = client.citations(pid, args.limit)
+        state = args.state or Path(f"cited-{re.sub(r'[^A-Za-z0-9._-]+', '_', pid)}.json")
+        seen = cited.load_state(state) if args.new or args.state else set()
+    except cited.S2Error as e:
+        print(f"scholar-cards: {e}", file=sys.stderr)
+        return 2
+    title = str(info.get("title") or pid)
+    shown = [c for c in items if c.id not in seen] if args.new else items
+    if args.format == "json":
+        sys.stdout.write(cited.to_json(pid, title, shown, int(info.get("citationCount") or 0)))
+    elif args.format == "markdown":
+        sys.stdout.write(cited.markdown(title, shown, args.new))
+    else:
+        sys.stdout.write(cited.text(title, shown, int(info.get("citationCount") or 0), args.new, args.contexts))
+    if args.new or args.state:
+        first = not seen
+        cited.save_state(state, pid, seen | {c.id for c in items}, dt.date.today().isoformat())
+        if first and args.new:
+            print(f"scholar-cards: first run: {len(items)} citing papers remembered in {state}; the next run lists the new ones", file=sys.stderr)
+    return 1 if args.fail_on_new and args.new and seen and shown else 0
+
+
 def main(argv: list[str] | None = None) -> int:
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    args_in = sys.argv[1:] if argv is None else argv
+    if args_in[:1] == ["cited"]:
+        return cited_main(args_in[1:])
     ap = argparse.ArgumentParser(prog="scholar-cards", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter,
                                  epilog="exit status: 0 done, 1 nothing found, 2 an error (bad ID, OpenAlex unreachable, bad snapshot)")  # fmt: skip
     ap.add_argument("who", nargs="?", metavar="AUTHOR", help="an OpenAlex author ID (A…) or an ORCID; or: search NAME")

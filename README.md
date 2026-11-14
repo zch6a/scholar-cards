@@ -117,6 +117,64 @@ that deploys on push (al-folio does) publishes the new cards at its next deploy;
 `gh workflow run <your deploy workflow>` to the commit job, with `actions: write` in its permissions. al-folio's own dark-mode switch does not change the
 reader's system setting, so there `theme: light` or `dark` (matching the site) reads better than `auto`.
 
+## Who cites a paper, and what they say: `scholar-cards cited`
+
+Citation counts say how many; `cited` says who and in what words. It lists the papers that cite one paper (an arXiv
+id, a DOI or a Semantic Scholar id), newest first, with the sentences that cite it, from Semantic Scholar's public
+API (only the paper's id is sent). With `--new` it remembers the citing papers it has seen in a state file and lists
+only the new ones, so a weekly workflow can open an issue for them.
+
+```console
+$ scholar-cards cited arXiv:2312.00752 --limit 1000
+Mamba: Linear-Time Sequence Modeling with Selective State Spaces: 1000 citing paper(s) of 10,263 counted by Semantic Scholar
+  with the sentences that cite it: 759; contrasts with 98, compares with 62, builds on 227, mentions 1086; claims to beat it: 0
+...
+2026-10-08  [builds on]       MemReg: Streaming Outdoor LiDAR Point Cloud Registration with Hybrid Memory Buffers
+            “In this paper, we adopt the vanilla Mamba architecture [34] in our temporal encoding layer as illustrated in Fig.”  (builds on: we adopt)
+2026-09-01  [contrasts with]  Towards Efficient and Effective Unimodal Trajectory Representation Learning: A Simple Yet Powerful Approach · IJCAI/ECAI
+            “Although current Mamba [Gu and Dao, 2023] architectures offer linear complexity, since standard SSMs are inherently causal, this architecture fails to capture the non-causal topological dependencies intrinsic to road networks.”  (contrasts with: Although)
+```
+
+Each sentence gets a label from rules on its words, shown with the word that decided it: **builds on** ("we adopt",
+"based on", "follows", "backbone"), **compares with** ("baseline", "outperforms", "we compare", a result with ±),
+**contrasts with** ("however", "although", "fails to", "lacks"), or **mentions**. They are hints, not judgements: on
+40 sentences citing Mamba, drawn at random and read by hand, the label matched the reading for 27 (builds on 6 of 10,
+contrasts with 1 of 4, compares with 1 of 1, mentions 19 of 25); "whereas" and "unlike" often describe rather than
+disagree. A first version did worse (25 of 40, on another sample) and is what the rules were corrected on: "rather
+than" counted as a comparison, "follows" and "as in" were missed, and "Gu et al. proposed..." was taken for the
+citing authors' own claim. A citing paper that says, in its own voice, that it outperforms the cited one is listed as
+"claims to beat it".
+
+Semantic Scholar has the citing sentences for part of the citing papers (759 of Mamba's first 1,000), and its public
+API is often busy: `cited` waits and asks again (5, 20, 60, 120 s), and a free key in `S2_API_KEY` makes it reliable.
+`--format markdown` gives a table for an issue; `--format json` everything.
+
+```yaml
+# .github/workflows/cited.yml: every Monday, an issue listing the week's new citations of your paper
+on:
+  schedule: [{cron: "0 7 * * 1"}]
+  workflow_dispatch:
+permissions:
+  contents: write   # to commit the state file (the citing papers already seen)
+  issues: write
+jobs:
+  cited:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          S2_API_KEY: ${{ secrets.S2_API_KEY }}   # optional
+        run: |
+          if ! uvx --from git+https://github.com/zch6a/scholar-cards@v0 scholar-cards cited arXiv:2312.00752 \
+               --new --state cited/state.json --format markdown --fail-on-new > news.md; then
+            gh issue create --title "New citations" --body-file news.md
+          fi
+          git config user.name github-actions; git config user.email github-actions@users.noreply.github.com
+          git add cited/state.json && git commit -m "cited: state" && git push || true
+```
+
 ## What the numbers are
 
 | | |

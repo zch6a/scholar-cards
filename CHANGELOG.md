@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.2.0 — 2026-11-14
+
+- **`scholar-cards cited PAPER`**: who cites a paper and what they say. The citing papers and the sentences that cite
+  it come from Semantic Scholar's public API (the paper's id only; `S2_API_KEY` optional; 429 answers retried after
+  5, 20, 60 and 120 s). Each sentence is labelled by rules (builds on, compares with, contrasts with, mentions) with
+  the deciding word; papers that claim, in their own voice, to beat the cited one are listed. `--new` with a state
+  file lists only new citing papers; `--format text|markdown|json`, `--fail-on-new` for a weekly issue.
+- Measured on Mamba's first 1,000 citing papers: 759 with citing sentences; the labels matched a hand reading for 27
+  of 40 sentences drawn at random.
+
 ## 0.1.1 — 2026-11-14
 
 - The agent skill's frontmatter is valid YAML again: its description held a `: `, which YAML reads as a new key, so

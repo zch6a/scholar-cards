@@ -107,6 +107,51 @@ jobs:
 能写你仓库的那个任务不运行本工具的任何代码；运行本工具的任务没有写权限。改了 `out` 的话，提交任务里的 `cards/` 路径也要一起改。每次运行通常都会产生一次提交：卡片上的日期会变。如果你的仓库要求，把 action 固定到具体提交。
 用 al-folio 或 academicpages 时，把 `out` 指向网站会发布的一个专用目录（例如 `assets/img/scholar-cards/`，不要用 `assets/img/` 本身：提交任务每次运行都会清空这个目录），把卡片当图片用。工作流推送的提交不会触发其他工作流，所以靠推送部署的网站（al-folio 就是）要等下次部署才会发布新卡片；想立刻部署，在提交任务里加上 `gh workflow run <你的部署工作流>`，并给它 `actions: write` 权限。al-folio 自带的暗色开关不会改变读者的系统设置，所以在那里用与网站一致的 `theme: light` 或 `dark` 比 `auto` 更合适。
 
+## 谁引用了一篇论文、怎么说的：`scholar-cards cited`
+
+引用数只说明有多少；`cited` 说明是谁、用什么话引用的。它列出引用某篇论文（arXiv 编号、DOI 或 Semantic Scholar 编号）的论文，最新的在前，附上引用它的句子，数据来自 Semantic Scholar 的公开 API（只发送这篇论文的编号）。加 `--new` 时，它把已经见过的引用论文记在一个状态文件里，只列新的，方便每周的工作流开 issue。
+
+```console
+$ scholar-cards cited arXiv:2312.00752 --limit 1000
+Mamba: Linear-Time Sequence Modeling with Selective State Spaces: 1000 citing paper(s) of 10,263 counted by Semantic Scholar
+  with the sentences that cite it: 759; contrasts with 98, compares with 62, builds on 227, mentions 1086; claims to beat it: 0
+...
+2026-10-08  [builds on]       MemReg: Streaming Outdoor LiDAR Point Cloud Registration with Hybrid Memory Buffers
+            “In this paper, we adopt the vanilla Mamba architecture [34] in our temporal encoding layer as illustrated in Fig.”  (builds on: we adopt)
+2026-09-01  [contrasts with]  Towards Efficient and Effective Unimodal Trajectory Representation Learning: A Simple Yet Powerful Approach · IJCAI/ECAI
+            “Although current Mamba [Gu and Dao, 2023] architectures offer linear complexity, since standard SSMs are inherently causal, this architecture fails to capture the non-causal topological dependencies intrinsic to road networks.”  (contrasts with: Although)
+```
+
+每个句子按词语规则加一个标签，并显示起决定作用的词：**builds on**（“we adopt”、“based on”、“follows”、“backbone”）、**compares with**（“baseline”、“outperforms”、“we compare”、带 ± 的结果）、**contrasts with**（“however”、“although”、“fails to”、“lacks”），或 **mentions**。这些只是提示，不是判断：随机抽取 40 个引用 Mamba 的句子人工阅读，标签与阅读结果一致的有 27 个（builds on 10 个中 6 个，contrasts with 4 个中 1 个，compares with 1 个中 1 个，mentions 25 个中 19 个）；“whereas”、“unlike” 常常只是描述，并非反对。第一版效果更差（在另一组样本上 40 个中 25 个），规则就是据此修正的：“rather than” 被当成比较，“follows”、“as in” 没有识别，“Gu et al. proposed...” 被当成引用者自己的说法。引用论文以自己的口吻说优于被引论文时，列为 “claims to beat it”。
+
+Semantic Scholar 只对部分引用论文有引用句（Mamba 的前 1000 篇引用中有 759 篇），而且公开 API 经常繁忙：`cited` 会等待后重试（5、20、60、120 秒），在 `S2_API_KEY` 里设置免费的 key 会稳定很多。`--format markdown` 输出可用于 issue 的表格，`--format json` 输出全部内容。
+
+```yaml
+# .github/workflows/cited.yml: every Monday, an issue listing the week's new citations of your paper
+on:
+  schedule: [{cron: "0 7 * * 1"}]
+  workflow_dispatch:
+permissions:
+  contents: write   # to commit the state file (the citing papers already seen)
+  issues: write
+jobs:
+  cited:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          S2_API_KEY: ${{ secrets.S2_API_KEY }}   # optional
+        run: |
+          if ! uvx --from git+https://github.com/zch6a/scholar-cards@v0 scholar-cards cited arXiv:2312.00752 \
+               --new --state cited/state.json --format markdown --fail-on-new > news.md; then
+            gh issue create --title "New citations" --body-file news.md
+          fi
+          git config user.name github-actions; git config user.email github-actions@users.noreply.github.com
+          git add cited/state.json && git commit -m "cited: state" && git push || true
+```
+
 ## 这些数字是什么
 
 | | |

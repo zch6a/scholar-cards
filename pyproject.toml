@@ -1,6 +1,6 @@
 [project]
 name = "scholar-cards"
-version = "0.1.1"
+version = "0.2.0"
 description = "A researcher's citations, h-index and most cited papers, from OpenAlex, as SVG cards for a homepage (al-folio, academicpages) or a GitHub profile; a GitHub Action keeps them fresh."
 readme = "README.md"
 license = "MIT"
